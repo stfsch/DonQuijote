@@ -8,4 +8,5 @@ Setup
 =====
 
 * Install Eclipse with EGit plugin.
-* File -> Import -> Git -> Projects from Git -> Clone URI -> enter https://github.com/stfsch/DonQuijote.git and choose protocol HTTPS -> ...
+* Window -> Preferences -> type 'ssh' -> SSH -> add private key
+* File -> Import -> Git -> Projects from Git -> Clone URI -> enter ssh://git@github.com:stfsch/DonQuijote.git and choose protocol SSH -> ...
