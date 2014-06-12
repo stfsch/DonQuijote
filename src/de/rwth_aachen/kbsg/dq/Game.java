@@ -1,32 +1,47 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class Game {
-private Spieler spielerWeiss;
-private Spieler spielerSchwarz;
-protected String phase= "setzen";
-Zustand currentZustand=Zustand.getZustand();
-
+private Spieler spielerWhite;
+private Spieler spielerBlack;
+protected String phase;
+private Zustand currentZustand;
+public Game(){
+spielerWhite= new Spieler();
+spielerBlack= new Spieler();
+phase= "setzen";
+currentZustand=new Zustand();
+}
+private Zustand prüfeZug(Zustand newZustand, String farbe){
+	
+	currentZustand
+	return 
+}
 public void play(){
 while(phase!="ende"){
-	int steine=Zustand.getAnzahlSteine("");
-	int steineSchwarz=Zustand.getAnzahlSteine("schwarz");
-	int steineWeiss=Zustand.getAnzahlSteine("weiss");
+	int steine=currentZustand.getAnzahlSteine("");
+	int steineSchwarz=currentZustand.getAnzahlSteine("black");
+	int steineWeiss=currentZustand.getAnzahlSteine("white");
 	if(steine==18){
 		phase="ziehen";
-	}
+		}
+	
 	else if(phase=="ziehen"&&steineWeiss==3){
-		phase="springenWeiss";
+		phase="springenWhite";
 		if(steineSchwarz==3){
 			phase="springen";
 		}
 	}
 	else if(phase=="ziehen"&&steineSchwarz==3){
-		phase="springenSchwarz";
+		phase="springenBlack";
 	}
 	else if(phase=="springen"&&steineSchwarz<3||steineWeiss<3){
 		phase="ende";
 	}
-	spielerWeiss.nextMove(currentZustand, phase);
+	System.out.println("Weiß ist dran.");
+	Zustand zug=spielerWhite.nextMove();
+	prüfeZug(zug,"white");
+	
+	
 	
 }
 }
