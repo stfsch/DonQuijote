@@ -1,48 +1,60 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class Game {
-private Spieler spielerWhite;
-private Spieler spielerBlack;
-protected String phase;
-private Zustand currentZustand;
-public Game(){
-spielerWhite= new Spieler();
-spielerBlack= new Spieler();
-phase= "setzen";
-currentZustand=new Zustand();
-}
-private Zustand prüfeZug(Zustand newZustand, String farbe){
+	private Player playerWhite;
+	private Player playerBlack;
+	public String phase;
+	private State currentState;
+
+	public Game(){
+		playerWhite= new Player();
+		playerBlack= new Player();
+		phase= "setzen";
+		currentState=new State();
+	}
 	
-	currentZustand
-	return 
-}
-public void play(){
-while(phase!="ende"){
-	int steine=currentZustand.getAnzahlSteine("");
-	int steineSchwarz=currentZustand.getAnzahlSteine("black");
-	int steineWeiss=currentZustand.getAnzahlSteine("white");
-	if(steine==18){
-		phase="ziehen";
+	private boolean prüfeZug(State newState, Spot colour){
+		State[]possibleNextStates=newState.getPossibleNextStates(colour, newState, phase);
+		int k=0;
+		for(int i=0; i<57;i++){
+			State possibleState=possibleNextStates[i];
+			if(newState.isSameAs(possibleState)==true){
+				k=1;
+			}
 		}
+		if(k==1){
+			return true;
+		}
+		else{
+			return false;
+		}
+
+	}
+	public void play(){
+		while(phase!="ende"){
+			int men=currentState.countMen("");
+			int menBlack=currentState.countMen("black");
+			int menWhite=currentState.countMen("white");
+			if(men==18){
+				phase="ziehen";
+			}
 	
-	else if(phase=="ziehen"&&steineWeiss==3){
-		phase="springenWhite";
-		if(steineSchwarz==3){
-			phase="springen";
+			else if(phase=="ziehen"&&menWhite==3){
+				phase="springenWhite";
+				if(menBlack==3){
+					phase="springen";
+				}
+			}
+			else if(phase=="ziehen"&&menBlack==3){
+				phase="springenBlack";
+			}
+			else if(phase=="springen"&&menBlack<3||menWhite<3){
+				phase="ende";
+			}
+			System.out.println("Weiß ist dran.");
+			State zug=playerWhite.nextMove();
+			prüfeZug(zug,"white");
+			
 		}
 	}
-	else if(phase=="ziehen"&&steineSchwarz==3){
-		phase="springenBlack";
-	}
-	else if(phase=="springen"&&steineSchwarz<3||steineWeiss<3){
-		phase="ende";
-	}
-	System.out.println("Weiß ist dran.");
-	Zustand zug=spielerWhite.nextMove();
-	prüfeZug(zug,"white");
-	
-	
-	
-}
-}
 }
