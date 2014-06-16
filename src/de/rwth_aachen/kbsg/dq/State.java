@@ -1,7 +1,5 @@
 package de.rwth_aachen.kbsg.dq;
 
-import java.util.ArrayList;
-
 public class State {
 
 	public Spot occupancy[][];
@@ -62,6 +60,7 @@ public class State {
 	public Spot[][] getOccupancy() {
 		return occupancy;
 	}
+	
 	public boolean isSameAs(State state){
 		Spot [][]occupancy2=state.getOccupancy();
 		int k=0;
@@ -80,14 +79,14 @@ public class State {
 		}
 	}
 	
-	public State[] getPossibleNextStates(Spot colour, State currentState,String phase) {
-		State[] possibleNextStates= new State[57];
+	public State[]getPossibleNextStates(Spot colour, State currentState, String phase) {
+		State[] possibleNextStates= new State[54];
 		int p=0;
-		for(int i=0;i<57;i++){
+		for(int i=0;i<54;i++){
 			possibleNextStates[i]= new State();
 		}
 		switch (phase) {
-		case "setzen":
+		case "SETZEN":
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if(occupancy[i][j] == Spot.EMPTY&& isMühle(i, j, colour) == false) {
@@ -97,11 +96,10 @@ public class State {
 						possibleNextStates[p]=state;
 						p++;
 					}
-					return possibleNextStates;
 				}
 			}
-			break;
-		case "ziehen":
+		break;
+		case "ZIEHEN":
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (occupancy[i][j] == colour && j != 7) {
@@ -129,7 +127,7 @@ public class State {
 							occupancy[i][j-1] = colour;
 							occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
-							p++
+							p++;
 						}
 					} else if (occupancy[i][j] == colour && j == 0) {
 						if (occupancy[i][7] == Spot.EMPTY) {
@@ -164,20 +162,19 @@ public class State {
 					}
 				}
 			}
-			return possibleNextStates;
-			break;
-		case "springen":
-		case "springenWhite":
-		case "springenBlack":
-			if (phase == "springenWhite" && colour == Spot.BLACK) {
-				phase = "ziehen";
+		break;
+		case "SPRINGENBOTH":
+		case "SPRINGENWHITE":
+		case "SPRINGENBLACK":
+			if (phase == "SPRINGENWHITE" && colour == Spot.BLACK) {
+				phase = "ZIEHEN";
 				getPossibleNextStates(colour, currentState, phase);
-				phase = "springenWhite";
+				phase = "SPRINGENWHITE";
 			} 
-			else if (phase == "springenBlack" && colour == Spot.WHITE) {
-				phase = "ziehen";
+			else if (phase == "SPRINGENBLACK" && colour == Spot.WHITE) {
+				phase = "ZIEHEN";
 				getPossibleNextStates(colour, currentState, phase);
-				phase = "springenBlack";
+				phase = "SPRINGENBLACK";
 			}
 			else {
 				for (int i = 0; i < 3; i++) {
@@ -199,9 +196,8 @@ public class State {
 					}
 				}
 			}
-			return possibleNextStates;
-			break;
-		case "wegnehmen":
+		break;	
+		case "WEGNEHMEN":
 			if (colour == Spot.WHITE) {
 				colour = Spot.BLACK;
 			}
@@ -221,8 +217,8 @@ public class State {
 					}
 				}
 			}
-			return possibleNextStates;
 		}
+		return possibleNextStates;
 	}
 
 	public int countMen(String colour) {

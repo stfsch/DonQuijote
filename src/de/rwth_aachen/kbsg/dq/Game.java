@@ -1,23 +1,31 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class Game {
+	private TUI tui;
 	private Player playerWhite;
 	private Player playerBlack;
-	public String phase;
+	public Phase phase;
 	private State currentState;
 
 	public Game(){
+		tui= new TUI();
 		playerWhite= new Player();
+		playerWhite.colour=Spot.WHITE;
 		playerBlack= new Player();
-		phase= "setzen";
+		playerBlack.colour=Spot.BLACK;
+		phase= Phase.SETZEN;
 		currentState=new State();
 	}
 	
+	private int stringToInt(String s){
+		int i=Integer.parseInt(s);
+		return i;
+	}
+	
 	private boolean prüfeZug(State newState, Spot colour){
-		State[]possibleNextStates=newState.getPossibleNextStates(colour, newState, phase);
+		State[] possibleNextStates = newState.getPossibleNextStates(colour, newState, phase.name());
 		int k=0;
-		for(int i=0; i<57;i++){
-			State possibleState=possibleNextStates[i];
+		for(State possibleState : possibleNextStates){
 			if(newState.isSameAs(possibleState)==true){
 				k=1;
 			}
@@ -31,30 +39,184 @@ public class Game {
 
 	}
 	public void play(){
-		while(phase!="ende"){
+		
+		System.out.println("entering play, phase = " + phase.name());
+
+		while(phase!=Phase.ENDE){
+			System.out.println("still playing, phase = " + phase.name());
 			int men=currentState.countMen("");
 			int menBlack=currentState.countMen("black");
 			int menWhite=currentState.countMen("white");
 			if(men==18){
-				phase="ziehen";
+				phase=Phase.ZIEHEN;
+				System.out.println("all men have been placed, switching to moving, phase = " + phase.name());
 			}
 	
-			else if(phase=="ziehen"&&menWhite==3){
-				phase="springenWhite";
+			else if(phase==Phase.ZIEHEN && menWhite==3){
+				phase=Phase.SPRINGENWHITE;
+				System.out.println("white only has three men left, phase = " + phase.name());
 				if(menBlack==3){
-					phase="springen";
+					phase=Phase.SPRINGENBOTH;
+					System.out.println("black also only has three men left, phase = " + phase.name());
 				}
 			}
-			else if(phase=="ziehen"&&menBlack==3){
-				phase="springenBlack";
+			else if(phase==Phase.ZIEHEN && menBlack==3){
+				phase=Phase.SPRINGENBLACK;
+				System.out.println("black only has three men left, phase = " + phase.name());
 			}
-			else if(phase=="springen"&&menBlack<3||menWhite<3){
-				phase="ende";
+			else if (phase!=Phase.SETZEN && (menBlack<3 || menWhite<3)){
+				phase=Phase.ENDE;
+				System.out.println("game is over, phase = " + phase.name());
 			}
-			System.out.println("Weiß ist dran.");
-			State zug=playerWhite.nextMove();
-			prüfeZug(zug,"white");
-			
+			tui.printState(currentState);
+			State zug;
+			System.console().printf("phase = %s\n", phase.name());
+			System.out.println("phase=" + phase.name());
+			if (phase==Phase.SETZEN) {
+				System.out.println("phase=" + phase.name());
+				System.out.println("phase=setzen. Weisz ist dran.");
+				System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
+				String wR=System.console().readLine();
+				int wunschRahmen=stringToInt(wR);
+				System.out.println("Waehle eine Position (zwischen 0 und 7)");
+				String wP=System.console().readLine();
+				int wunschPosition=stringToInt(wP);
+				zug=playerWhite.placeNextMan(wunschRahmen, wunschPosition, currentState);
+				while(prüfeZug(zug,Spot.WHITE)==false){
+					System.out.println("Zug ungültig.");
+					System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
+					wR=System.console().readLine();
+					wunschRahmen=stringToInt(wR);
+					System.out.println("Waehle eine Position (zwischen 0 und 7)");
+					wP=System.console().readLine();
+					wunschPosition=stringToInt(wP);
+					zug=playerWhite.placeNextMan(wunschRahmen, wunschPosition,currentState);
+				}
+				currentState=zug;
+				tui.printState(currentState);
+				System.out.println("Schwarz ist dran.");
+				System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
+				wR=System.console().readLine();
+				wunschRahmen=stringToInt(wR);
+				System.out.println("Waehle eine Position (zwischen 0 und 7)");
+				wP=System.console().readLine();
+				wunschPosition=stringToInt(wP);
+				zug=playerBlack.placeNextMan(wunschRahmen, wunschPosition,currentState);
+				while(prüfeZug(zug,Spot.BLACK)==false){
+					System.out.println("Zug ungültig.");
+					System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
+					wR=System.console().readLine();
+					wunschRahmen=stringToInt(wR);
+					System.out.println("Waehle eine Position (zwischen 0 und 7)");
+					wP=System.console().readLine();
+					wunschPosition=stringToInt(wP);
+					zug=playerBlack.placeNextMan(wunschRahmen, wunschPosition,currentState);
+				}
+				currentState=zug;
+				tui.printState(currentState);
+			}
+			if(phase==Phase.ZIEHEN||phase==Phase.SPRINGENBOTH||phase==Phase.SPRINGENWHITE||phase==Phase.SPRINGENBLACK){
+				System.out.println("phase=" + phase.name());
+				Phase lastPhase=phase;
+				System.out.println("Weiß ist dran.");
+				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen) des Steins, der bewegt werden soll.");
+				String mR=System.console().readLine();
+				int manRahmen=stringToInt(mR);
+				System.out.println("Waehle die Position (zwischen 0 und 7), auf der der Stein sich befindet.");
+				String mP=System.console().readLine();
+				int manPosition=stringToInt(mP);
+				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen), auf den der Stein soll.");
+				String wR=System.console().readLine();
+				int wunschRahmen=stringToInt(wR);
+				System.out.println("Waehle die Position (zwischen 0 und 7), auf die der Stein soll.");
+				String wP=System.console().readLine();
+				int wunschPosition=stringToInt(wP);
+				zug=playerWhite.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
+				while(prüfeZug(zug,Spot.WHITE)==false){
+					System.out.println("Zug ungültig.");
+					zug=playerWhite.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
+				}
+				currentState=zug;
+				if(currentState.isMühle(wunschRahmen, wunschPosition, Spot.WHITE)==true){
+					phase=Phase.WEGNEHMEN;
+					System.out.println("Weiß hat eine Mühle geschlossen. Entferne einen gegnerischen Stein.");
+					System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nach innen), auf dem der Stein steht, der weg soll.");
+					mR=System.console().readLine();
+					manRahmen=stringToInt(mR);
+					System.out.println("Waehle die Position (zwischen 0 und 7)auf der der Stein steht");
+					mP=System.console().readLine();
+					manPosition=stringToInt(mP);
+					zug=playerWhite.removeMan(manRahmen, manPosition,currentState);
+					while(prüfeZug(zug, Spot.WHITE)==false){
+						System.out.println("Zug ungültig.");
+						System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nach innen), auf dem der Stein steht, der weg soll.");
+						mR=System.console().readLine();
+						manRahmen=stringToInt(mR);
+						System.out.println("Waehle die Position (zwischen 0 und 7)auf der der Stein steht");
+						mP=System.console().readLine();
+						manPosition=stringToInt(mP);
+						zug=playerWhite.removeMan(manRahmen, manPosition,currentState);
+					}
+					currentState=zug;
+					tui.printState(currentState);
+					phase=lastPhase;
+				}
+				System.out.println("Schwarz ist dran.");
+				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen) des Steins, der bewegt werden soll.");
+				mR=System.console().readLine();
+				manRahmen=stringToInt(mR);
+				System.out.println("Waehle die Position (zwischen 0 und 7), auf der der Stein sich befindet.");
+				mP=System.console().readLine();
+				manPosition=stringToInt(mP);
+				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen), auf den der Stein soll.");
+				wR=System.console().readLine();
+				wunschRahmen=stringToInt(wR);
+				System.out.println("Waehle die Position (zwischen 0 und 7), auf die der Stein soll.");
+				wP=System.console().readLine();
+				wunschPosition=stringToInt(wP);
+				zug=playerBlack.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
+				while(prüfeZug(zug,Spot.BLACK)==false){
+					System.out.println("Zug ungültig.");
+					System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen) des Steins, der bewegt werden soll.");
+					mR=System.console().readLine();
+					manRahmen=stringToInt(mR);
+					System.out.println("Waehle die Position (zwischen 0 und 7), auf der der Stein sich befindet.");
+					mP=System.console().readLine();
+					manPosition=stringToInt(mP);
+					System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen), auf den der Stein soll.");
+					wR=System.console().readLine();
+					wunschRahmen=stringToInt(wR);
+					System.out.println("Waehle die Position (zwischen 0 und 7), auf die der Stein soll.");
+					wP=System.console().readLine();
+					wunschPosition=stringToInt(wP);
+					zug=playerBlack.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
+				}
+				currentState=zug;
+				if(currentState.isMühle(wunschRahmen, wunschPosition,Spot.BLACK)==true){
+					phase=Phase.WEGNEHMEN;
+					System.out.println("Schwarz hat eine Mühle geschlossen. Entferne einen gegnerischen Stein.");
+					System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nach innen), auf dem der Stein steht, der weg soll.");
+					mR=System.console().readLine();
+					manRahmen=stringToInt(mR);
+					System.out.println("Waehle die Position (zwischen 0 und 7)auf der der Stein steht");
+					mP=System.console().readLine();
+					manPosition=stringToInt(mP);
+					zug=playerBlack.removeMan(manRahmen, manPosition,currentState);
+					while(prüfeZug(zug, Spot.BLACK)==false){
+						System.out.println("Zug ungültig.");
+						System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nach innen), auf dem der Stein steht, der weg soll.");
+						mR=System.console().readLine();
+						manRahmen=stringToInt(mR);
+						System.out.println("Waehle die Position (zwischen 0 und 7)auf der der Stein steht");
+						mP=System.console().readLine();
+						manPosition=stringToInt(mP);
+						zug=playerBlack.removeMan(manRahmen, manPosition,currentState);
+					}
+					currentState=zug;
+					tui.printState(currentState);
+					phase=lastPhase;
+				}
+			}
 		}
 	}
 }
