@@ -6,7 +6,7 @@ public class TUI {
 		char[][] c= new char[3][8];
 		for(int i=0; i<3; i++){
 			for(int j=0;j<8;j++){
-				c[i][j] = occupancy[i][j].spotToChar();
+				c[i][j] = occupancy[i][j].spotToChar();//wandelt Spot in Char um
 			}
 		}
 		//System.out.println(System.console());	
