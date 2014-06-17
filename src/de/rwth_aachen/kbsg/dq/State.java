@@ -66,7 +66,7 @@ public class State {
 		int k=0;
 		for(int i=0;i<3;i++){
 			for(int j=0;j<8;j++){
-				if(occupancy[i][j]!=occupancy2[i][j]){
+				if(occupancy[i][j]!= occupancy2[i][j]){
 					k=1;
 				}
 			}
@@ -79,7 +79,7 @@ public class State {
 		}
 	}
 	
-	public State[]getPossibleNextStates(Spot colour, State currentState, String phase) {
+	public State[]getPossibleNextStates(Spot colour, String phase) {
 		State[] possibleNextStates= new State[54];
 		int p=0;
 		for(int i=0;i<54;i++){
@@ -89,11 +89,11 @@ public class State {
 		case "SETZEN":
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
-					if(occupancy[i][j] == Spot.EMPTY&& isMühle(i, j, colour) == false) {
-						State state = new State();
-						state = currentState;
-						occupancy[i][j] = colour;
-						possibleNextStates[p]=state;
+					//State state = new State();
+					//state.occupancy = getOccupancy();
+					if(this.occupancy[i][j] == Spot.EMPTY && isMühle(i, j, colour) == false) {
+						possibleNextStates[p].occupancy = this.occupancy.clone();
+						possibleNextStates[p].occupancy[i][j]=colour;
 						p++;
 					}
 				}
@@ -105,36 +105,36 @@ public class State {
 					if (occupancy[i][j] == colour && j != 7) {
 						if (occupancy[i][j + 1] == Spot.EMPTY) {
 							State state = new State();
-							state = currentState;
-							occupancy[i][j + 1] = colour;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i][j + 1] = colour;
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}
 					} else if (occupancy[i][j] == colour && j == 7) {
 						if (occupancy[i][0] == Spot.EMPTY) {
 							State state = new State();
-							state = currentState;
-							occupancy[i][j+1] = colour;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i][j+1] = colour;
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}
 					} else if (occupancy[i][j] == colour && j != 0) {
 						if (occupancy[i][j - 1] == Spot.EMPTY) {
 							State state = new State();
-							state = currentState;
-							occupancy[i][j-1] = colour;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i][j-1] = colour;
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}
 					} else if (occupancy[i][j] == colour && j == 0) {
 						if (occupancy[i][7] == Spot.EMPTY) {
 							State state = new State();
-							state = currentState;
-							occupancy[i][7] = colour;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i][7] = colour;
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}
@@ -143,9 +143,9 @@ public class State {
 						if (occupancy[i][j] == colour && i != 2) {
 							if (occupancy[i + 1][j] == Spot.EMPTY) {
 								State state = new State();
-								state = currentState;
-								occupancy[i + 1][j] = colour;
-								occupancy[i][j] = Spot.EMPTY;
+								state.occupancy = getOccupancy();
+								state.occupancy[i + 1][j] = colour;
+								state.occupancy[i][j] = Spot.EMPTY;
 								possibleNextStates[p]=state;
 								p++;
 							}
@@ -153,9 +153,9 @@ public class State {
 					} else if (occupancy[i][j] == colour && i != 0) {
 						if (occupancy[i - 1][j] == Spot.EMPTY) {
 							State state = new State();
-							state = currentState;
-							occupancy[i-1][j]=colour;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i-1][j]=colour;
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}
@@ -168,12 +168,12 @@ public class State {
 		case "SPRINGENBLACK":
 			if (phase == "SPRINGENWHITE" && colour == Spot.BLACK) {
 				phase = "ZIEHEN";
-				getPossibleNextStates(colour, currentState, phase);
+				getPossibleNextStates(colour, phase);
 				phase = "SPRINGENWHITE";
 			} 
 			else if (phase == "SPRINGENBLACK" && colour == Spot.WHITE) {
 				phase = "ZIEHEN";
-				getPossibleNextStates(colour, currentState, phase);
+				getPossibleNextStates(colour, phase);
 				phase = "SPRINGENBLACK";
 			}
 			else {
@@ -184,9 +184,9 @@ public class State {
 								for (int l = 0; l < 8; l++) {
 									if (occupancy[k][l] == Spot.EMPTY) {
 										State state = new State();
-										state = currentState;
-										occupancy[k][l] = colour;
-										occupancy[i][j] = Spot.EMPTY;
+										state.occupancy = getOccupancy();
+										state.occupancy[k][l] = colour;
+										state.occupancy[i][j] = Spot.EMPTY;
 										possibleNextStates[p]=state;
 										p++;
 									}
@@ -207,10 +207,10 @@ public class State {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (occupancy[i][j] == colour) {
-						if (currentState.isMühle(i, j, colour) == false) {
+						if (isMühle(i, j, colour) == false) {
 							State state = new State();
-							state = currentState;
-							occupancy[i][j] = Spot.EMPTY;
+							state.occupancy = getOccupancy();
+							state.occupancy[i][j] = Spot.EMPTY;
 							possibleNextStates[p]=state;
 							p++;
 						}

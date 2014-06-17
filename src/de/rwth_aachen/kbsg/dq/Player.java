@@ -6,16 +6,14 @@ public class Player {
 	
 	public State placeNextMan (int wunschRahmen, int wunschPosition, State currentState){
 		State newState=new State();
-		newState= currentState;
-		Spot[][] occupancy=newState.getOccupancy();
-		occupancy[wunschRahmen][wunschPosition]=colour;
+		newState.occupancy= currentState.getOccupancy().clone();
+		newState.occupancy[wunschRahmen][wunschPosition]=colour;
 		return newState;
 	}
 	public State removeMan (int manRahmen, int manPosition,State currentState){
 		State newState=new State();
-		newState=currentState;
-		Spot[][]occupancy=newState.getOccupancy();
-		occupancy[manRahmen][manPosition]=Spot.EMPTY;
+		newState.occupancy=currentState.occupancy.clone();
+		newState.occupancy[manRahmen][manPosition]=Spot.EMPTY;
 		return newState;
 	}
 	public State nextMove(int manRahmen, int manPosition, int wunschRahmen, int wunschPosition,State currentState) {

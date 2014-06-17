@@ -1,5 +1,9 @@
 package de.rwth_aachen.kbsg.dq;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class Game {
 	private TUI tui;
 	private Player playerWhite;
@@ -23,7 +27,7 @@ public class Game {
 	}
 	
 	private boolean prüfeZug(State newState, Spot colour){
-		State[] possibleNextStates = newState.getPossibleNextStates(colour, newState, phase.name());
+		State[] possibleNextStates = currentState.getPossibleNextStates(colour, phase.name());
 		int k=0;
 		for(State possibleState : possibleNextStates){
 			if(newState.isSameAs(possibleState)==true){
@@ -41,7 +45,6 @@ public class Game {
 	public void play(){
 		
 		System.out.println("entering play, phase = " + phase.name());
-
 		while(phase!=Phase.ENDE){
 			System.out.println("still playing, phase = " + phase.name());
 			int men=currentState.countMen("");
@@ -70,25 +73,46 @@ public class Game {
 			}
 			tui.printState(currentState);
 			State zug;
-			System.console().printf("phase = %s\n", phase.name());
-			System.out.println("phase=" + phase.name());
+			System.out.println("phase = "+phase.name() +"\n");
 			if (phase==Phase.SETZEN) {
-				System.out.println("phase=" + phase.name());
-				System.out.println("phase=setzen. Weisz ist dran.");
+				System.out.println("phase=setzen. Weiß ist dran.");
 				System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
-				String wR=System.console().readLine();
+				BufferedReader in = new BufferedReader(new InputStreamReader( System.in ));
+				String wR="";
+				try {
+					wR = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				int wunschRahmen=stringToInt(wR);
 				System.out.println("Waehle eine Position (zwischen 0 und 7)");
-				String wP=System.console().readLine();
+				String wP = "";
+				try {
+					wP = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				int wunschPosition=stringToInt(wP);
 				zug=playerWhite.placeNextMan(wunschRahmen, wunschPosition, currentState);
 				while(prüfeZug(zug,Spot.WHITE)==false){
 					System.out.println("Zug ungültig.");
 					System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
-					wR=System.console().readLine();
+					try {
+						wR = in.readLine();
+					} catch (IOException e) {
+						// TODO Automatisch generierter Erfassungsblock
+						System.out.println(e.getMessage());
+					}
 					wunschRahmen=stringToInt(wR);
 					System.out.println("Waehle eine Position (zwischen 0 und 7)");
-					wP=System.console().readLine();
+					try {
+						wP = in.readLine();
+					} catch (IOException e) {
+						// TODO Automatisch generierter Erfassungsblock
+						System.out.println(e.getMessage());
+					}
 					wunschPosition=stringToInt(wP);
 					zug=playerWhite.placeNextMan(wunschRahmen, wunschPosition,currentState);
 				}
@@ -96,19 +120,39 @@ public class Game {
 				tui.printState(currentState);
 				System.out.println("Schwarz ist dran.");
 				System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
-				wR=System.console().readLine();
+				try {
+					wR = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				wunschRahmen=stringToInt(wR);
 				System.out.println("Waehle eine Position (zwischen 0 und 7)");
-				wP=System.console().readLine();
+				try {
+					wP = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				wunschPosition=stringToInt(wP);
 				zug=playerBlack.placeNextMan(wunschRahmen, wunschPosition,currentState);
 				while(prüfeZug(zug,Spot.BLACK)==false){
 					System.out.println("Zug ungültig.");
 					System.out.println("Waehle einen Rahmen(0, 1 oder2, von außen nach innen).");
-					wR=System.console().readLine();
+					try {
+						wR = in.readLine();
+					} catch (IOException e) {
+						// TODO Automatisch generierter Erfassungsblock
+						System.out.println(e.getMessage());
+					}
 					wunschRahmen=stringToInt(wR);
 					System.out.println("Waehle eine Position (zwischen 0 und 7)");
-					wP=System.console().readLine();
+					try {
+						wP = in.readLine();
+					} catch (IOException e) {
+						// TODO Automatisch generierter Erfassungsblock
+						System.out.println(e.getMessage());
+					}
 					wunschPosition=stringToInt(wP);
 					zug=playerBlack.placeNextMan(wunschRahmen, wunschPosition,currentState);
 				}
