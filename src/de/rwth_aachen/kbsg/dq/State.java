@@ -89,10 +89,14 @@ public class State {
 		case "SETZEN":
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
-					//State state = new State();
-					//state.occupancy = getOccupancy();
-					if(this.occupancy[i][j] == Spot.EMPTY && isMühle(i, j, colour) == false) {
-						possibleNextStates[p].occupancy = this.occupancy.clone();
+					if(occupancy[i][j] == Spot.EMPTY && isMühle(i, j, colour) == false) {
+						State state = new State();
+						for(int k = 0; k < 3; k++) {
+							for (int l = 0; l < 8; l++) {
+								state.occupancy[k][l] = this.occupancy[k][l];
+							}
+						}
+						possibleNextStates[p]=state;
 						possibleNextStates[p].occupancy[i][j]=colour;
 						p++;
 					}
@@ -218,6 +222,7 @@ public class State {
 				}
 			}
 		}
+
 		return possibleNextStates;
 	}
 

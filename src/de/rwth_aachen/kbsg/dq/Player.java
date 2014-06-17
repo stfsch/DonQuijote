@@ -6,7 +6,11 @@ public class Player {
 	
 	public State placeNextMan (int wunschRahmen, int wunschPosition, State currentState){
 		State newState=new State();
-		newState.occupancy= currentState.getOccupancy().clone();
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 8; j++) {
+				newState.occupancy[i][j] = currentState.occupancy[i][j];
+			}
+		}
 		newState.occupancy[wunschRahmen][wunschPosition]=colour;
 		return newState;
 	}

@@ -57,7 +57,7 @@ public class Game {
 	
 			else if(phase==Phase.ZIEHEN && menWhite==3){
 				phase=Phase.SPRINGENWHITE;
-				System.out.println("white only has three men left, phase = " + phase.name());
+				System.out.println("white has only three men left, phase = " + phase.name());
 				if(menBlack==3){
 					phase=Phase.SPRINGENBOTH;
 					System.out.println("black also only has three men left, phase = " + phase.name());
@@ -65,7 +65,7 @@ public class Game {
 			}
 			else if(phase==Phase.ZIEHEN && menBlack==3){
 				phase=Phase.SPRINGENBLACK;
-				System.out.println("black only has three men left, phase = " + phase.name());
+				System.out.println("black has only three men left, phase = " + phase.name());
 			}
 			else if (phase!=Phase.SETZEN && (menBlack<3 || menWhite<3)){
 				phase=Phase.ENDE;
@@ -162,18 +162,45 @@ public class Game {
 			if(phase==Phase.ZIEHEN||phase==Phase.SPRINGENBOTH||phase==Phase.SPRINGENWHITE||phase==Phase.SPRINGENBLACK){
 				System.out.println("phase=" + phase.name());
 				Phase lastPhase=phase;
+				BufferedReader in = new BufferedReader(new InputStreamReader( System.in ));
 				System.out.println("Weiß ist dran.");
+				String mR="";
+				int manRahmen;
 				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen) des Steins, der bewegt werden soll.");
-				String mR=System.console().readLine();
-				int manRahmen=stringToInt(mR);
-				System.out.println("Waehle die Position (zwischen 0 und 7), auf der der Stein sich befindet.");
-				String mP=System.console().readLine();
-				int manPosition=stringToInt(mP);
+				try {
+					mR = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
+				manRahmen=stringToInt(mR);
+				System.out.println("Waehle die Position (zwischen 0 und 7), auf der sich der zu bewegende Stein befindet.");
+				String mP ="";
+				int manPosition;
+				try {
+					mP = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
+				manPosition=stringToInt(mP);
 				System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen), auf den der Stein soll.");
-				String wR=System.console().readLine();
+				String wR="";
+				try {
+					wR = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				int wunschRahmen=stringToInt(wR);
 				System.out.println("Waehle die Position (zwischen 0 und 7), auf die der Stein soll.");
-				String wP=System.console().readLine();
+				String wP="";
+				try {
+					wP = in.readLine();
+				} catch (IOException e) {
+					// TODO Automatisch generierter Erfassungsblock
+					System.out.println(e.getMessage());
+				}
 				int wunschPosition=stringToInt(wP);
 				zug=playerWhite.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
 				while(prüfeZug(zug,Spot.WHITE)==false){
@@ -191,7 +218,7 @@ public class Game {
 					mP=System.console().readLine();
 					manPosition=stringToInt(mP);
 					zug=playerWhite.removeMan(manRahmen, manPosition,currentState);
-					while(prüfeZug(zug, Spot.WHITE)==false){
+					while(prüfeZug(zug,Spot.WHITE)==false){
 						System.out.println("Zug ungültig.");
 						System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nach innen), auf dem der Stein steht, der weg soll.");
 						mR=System.console().readLine();
@@ -219,7 +246,7 @@ public class Game {
 				wP=System.console().readLine();
 				wunschPosition=stringToInt(wP);
 				zug=playerBlack.nextMove(manRahmen, manPosition, wunschRahmen, wunschPosition,currentState);
-				while(prüfeZug(zug,Spot.BLACK)==false){
+				while(prüfeZug(zug, Spot.BLACK)==false){
 					System.out.println("Zug ungültig.");
 					System.out.println("Waehle den Rahmen(0, 1 oder2, von außen nech innen) des Steins, der bewegt werden soll.");
 					mR=System.console().readLine();
