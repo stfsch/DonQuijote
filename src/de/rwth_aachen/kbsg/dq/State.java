@@ -61,7 +61,7 @@ public class State {
 		return true;
 	}
 	
-	protected State copy() {
+	public State copy() {
 		State s = new State();
 		for (int i = 0; i < occupancy.length; ++i) {
 			s.occupancy[i] = Arrays.copyOf(this.occupancy[i], this.occupancy[i].length);
@@ -226,7 +226,7 @@ public class State {
 			break;
 		case TAKE:
 			for (Point p : onlyOccupiedBy(pointsOfField(), color.opponentOf())) {
-				if (!isMuehle(p, color.opponentOf())) {
+				if (!isMill(p, color.opponentOf())) {
 					states.add(take(p));
 				}
 			}
@@ -237,7 +237,7 @@ public class State {
 		return states;
 	}
 	
-	public boolean isMuehle(Point p, Color color) {
+	public boolean isMill(Point p, Color color) {
 		for (Collection<Point> line : linematesOf(p)) {
 			boolean mill = true;
 			for (Point q : line) {

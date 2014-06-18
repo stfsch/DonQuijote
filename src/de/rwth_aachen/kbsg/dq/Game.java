@@ -71,7 +71,7 @@ public class Game {
 	
 	private static boolean mayTake(Player active, State oldState, State newState) {
 		for (Point p : oldState.pointsOfField()) {
-			if (!oldState.isMuehle(p, active.getColor()) && newState.isMuehle(p, active.getColor())) {
+			if (!oldState.isMill(p, active.getColor()) && newState.isMill(p, active.getColor())) {
 				return true;
 			}
 		}
