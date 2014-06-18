@@ -45,15 +45,17 @@ public class TUI implements UI {
 				System.out.println("Waehle einen Rahmen (0, 1 oder 2, von außen nach innen).");
 				int frame = Integer.parseInt(in.readLine());
 				if (frame > 2) {
-					throw new IncorrectPositionException("Rahmen muss zwischen 0 und 2 liegen. Bitte neu eingeben:");
+					System.out.println("Rahmen muss zwischen 0 und 2 liegen. Bitte neu eingeben:");
+					continue;
 				}	
 				System.out.println("Waehle eine Position (zwischen 0 und 7)");				
 				int index = Integer.parseInt(in.readLine());
 				if (index > 7) {
-					throw new IncorrectPositionException("Position muss zwischen 0 und 7 liegen. Bitte neu eingeben:");
+					System.out.println("Position muss zwischen 0 und 7 liegen. Bitte neu eingeben:");
+					continue;
 				}
 				return new Point(frame, index);
-			} catch (IOException | IncorrectPositionException e) {
+			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
 		}

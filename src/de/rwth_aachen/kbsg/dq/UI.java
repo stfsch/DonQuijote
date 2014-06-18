@@ -16,7 +16,6 @@ public interface UI {
 	 * @param pActivePlayerColour Identifies the active player who should select
 	 * his next spot 
 	 * @return The selected point.
-	 * @throws IncorrectPositionException 
 	 */
 	public Point getPoint(Color pActivePlayerColour);
 	
