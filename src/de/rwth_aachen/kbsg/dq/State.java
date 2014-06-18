@@ -79,14 +79,14 @@ public class State {
 		}
 	}
 	
-	public State[]getPossibleNextStates(Spot colour, String phase) {
+	public State[]getPossibleNextStates(Spot colour, Phase phase) {
 		State[] possibleNextStates= new State[54];
 		int p=0;
 		for(int i=0;i<54;i++){
 			possibleNextStates[i]= new State();
 		}
 		switch (phase) {
-		case "SETZEN":
+		case SETZEN:
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if(occupancy[i][j] == Spot.EMPTY && isMühle(i, j, colour) == false) {
@@ -103,7 +103,7 @@ public class State {
 				}
 			}
 		break;
-		case "ZIEHEN":
+		case ZIEHEN:
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (occupancy[i][j] == colour && j != 7) {
@@ -167,18 +167,18 @@ public class State {
 				}
 			}
 		break;
-		case "SPRINGENBOTH":
-		case "SPRINGENWHITE":
-		case "SPRINGENBLACK":
-			if (phase == "SPRINGENWHITE" && colour == Spot.BLACK) {
-				phase = "ZIEHEN";
+		case SPRINGENBOTH:
+		case SPRINGENWHITE:
+		case SPRINGENBLACK:
+			if (phase == Phase.SPRINGENWHITE && colour == Spot.BLACK) {
+				phase = Phase.ZIEHEN;
 				getPossibleNextStates(colour, phase);
-				phase = "SPRINGENWHITE";
+				phase = Phase.SPRINGENWHITE;
 			} 
-			else if (phase == "SPRINGENBLACK" && colour == Spot.WHITE) {
-				phase = "ZIEHEN";
+			else if (phase == Phase.SPRINGENBLACK && colour == Spot.WHITE) {
+				phase = Phase.ZIEHEN;
 				getPossibleNextStates(colour, phase);
-				phase = "SPRINGENBLACK";
+				phase = Phase.SPRINGENBLACK;
 			}
 			else {
 				for (int i = 0; i < 3; i++) {
@@ -201,7 +201,7 @@ public class State {
 				}
 			}
 		break;	
-		case "WEGNEHMEN":
+		case WEGNEHMEN:
 			if (colour == Spot.WHITE) {
 				colour = Spot.BLACK;
 			}
@@ -226,20 +226,19 @@ public class State {
 		return possibleNextStates;
 	}
 
-	public int countMen(String colour) {
+	public int countMen(Colour colour) {
 		int men = 0;
 		switch (colour) {
-		case "":
+		case BOTH:
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
-					if (occupancy[i][j] == Spot.EMPTY) {
-					} else if (occupancy[i][j] != Spot.EMPTY) {
+					if (occupancy[i][j] != Spot.EMPTY) {
 						men++;
 					}
 				}
 			}
 			return men;
-		case "white":
+		case WHITE:
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (occupancy[i][j] == Spot.WHITE) {
@@ -248,7 +247,7 @@ public class State {
 				}
 			}
 			return men;
-		case "schwarz":
+		case BLACK:
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					if (occupancy[i][j] == Spot.BLACK) {

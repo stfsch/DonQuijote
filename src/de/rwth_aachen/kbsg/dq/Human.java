@@ -1,10 +1,6 @@
 package de.rwth_aachen.kbsg.dq;
 
-public class Player {
-
-	protected Spot colour;
-	protected Colour farbe;
-	
+public class Human extends Player {
 	public State placeNextMan (int pSpot[], State currentState){
 		State newState=new State();
 		for (int i = 0; i < 3; i++) {
