@@ -25,3 +25,4 @@ public class TUI {
 		System.out.println(c[0][6] +"-----------"+c[0][5] +"-----------"+c[0][4]);					
 	}
 }
+

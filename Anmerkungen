@@ -1,0 +1,100 @@
+Als Phasen würde ich vorschlagen:
+[Schwarz|Weiß]-setzen,
+[Schwarz|Weiß]-ziehen,
+[Schwarz|Weiß]-wegnehmen,
+[Schwarz|Weiß]-gewonnen,
+unentschieden.
+Die Übergänge zwischen den Phasen müssten wie folgt sein:
+
+Weiß-setzen  <--------+
+  |                   |
+  v                   |
+Schwarz-setzen        ^ acht weitere mal
+  |                   |
+  v                   |
+  +-------->----------+
+  |
+  +-------->--------+
+  | Spielende       | sonst
+  |                 +------------------------<--------------------------+
+  |                 |                                                   |
+  |                 v                                                   |
+  |               Weiß-ziehen                                           |
+  |                 |                                                   |
+  v                 +-------------------->---------------------+        |
+  |                 | wenn Weiß eine Mühle geschlossen hat     | sonst  |
+  |                 v                                          |        |
+  |               Weiß-wegnehmen                               v        |
+  |                 |                                          |        |
+  |                 v                                          |        |
+  |                 +--------------------<---------------------+        |
+  |       Spielende |                                                   |
+  +--------<--------+                                                   |
+  |                 | sonst                                             ^
+  |                 v                                                   |
+  |               Schwarz-ziehen                                        |
+  |                 +------------------>-----------------------+        |
+  |                 | wenn Schwarz eine Mühle geschlossen hat  | sonst  |
+  v                 v                                          |        |
+  |               Schwarz-wegnehmen                            v        |
+  |                 |                                          |        |
+  |                 v                                          |        |
+  |                 +--------------------<---------------------+        |
+  |       Spielende |                                                   |
+  +--------<--------+                                                   |
+  |                 | sonst                                             |
+  |                 v                                                   |
+  |                 +------------------------>--------------------------+
+  v
+entspr. Phase
+
+Dabei ist Spielende und dessen entspr. Phase wie folgt definiert:
+  ein Spieler hat weniger als 3 Steine       ->      anderer Spieler gewinnt
+  ein Spieler kann sich nicht mehr bewegen   ->      anderer Spieler gewinnt
+  keine Mühle seit 50 Zügen mehr geschlossen ->      unentschieden
+  selbe Stellung schon zum dritten mal       ->      unentschieden
+
+Jetzt fang ich übrigens auch schon mit diesem ASCII-Art-Scheiß an :-).
+
+Bevor du loslegst:
+
+Damit du nicht den ganzen Code doppelt für beide Farben hast, würde ich
+eine Enum Phase vorschlagen mit den Werten SET, MOVE, WIN, DRAW und
+zusätzlich eine Enum mit BLACK und WHITE für den Spieler, der am Zug ist.
+
+Die Methode Game.play() sollte nur die oben dargestellten Phasenübergänge
+direkt beinhalten; die jeweiligen Folgezustände sollten in Hilfsmethoden
+ausgelagert werden.
+Kontrollier doppelt, dass das Verhalten von Game.play() wirklich die obige
+Grafik widerspiegelt (es sei denn, ich hab einen Fehler in der Grafik gemacht).
+(Die Grafik stellt übrigens einen endlichen Automaten dar.)
+
+
+
+Noch ein paar weitere Anmerkungen:
+
+Entferne möglichst alle Strings (bis auf Konsonlen-Ausgaben) und verwende
+stattdessen Enums. Insbesondere in State.getNextPossibleStates() und
+State.countMen() stattdessen Enums benutzen.
+
+Du hast ein paar Dateien vergessen hinzuzufügen, da musst du beim Commiten die
+Häckchen anmachen.
+
+Schleifen, die über alle Elemente eines Arrays laufen o.ä., solltest du durch
+die for-each-Schleifen ersetzen. Also anstelle von
+  for (int i = 0; i < arr.length; ++i) {
+     Element e = arr[i];
+     ...
+  }
+durch Schleifen der Form
+  for (Element e : arr) {
+     ...
+  }
+ersetzen.
+
+Wenn du Code änderst oder neuen schreibst, solltest du mehr Leerzeichen
+benutzen, das ist lesbarer: Leerzeichen um Infixoperatoren wie ==, !=, &&, ...;
+Leerzeichen zwischen "if" und öffnener Klammer, Leerzeichen vor "{".
+Also wie auf https://google-styleguide.googlecode.com/svn/trunk/javaguide.html
+beschrieben.
+
