@@ -3,11 +3,10 @@ package de.rwth_aachen.kbsg.dq;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class Game {
-	private UI ui;
-	private Player white;
-	private Player black;
+	private final UI ui;
+	private final Player white;
+	private final Player black;
 	
 	private int nOccupations = 0;
 	private Phase oldPhase;
@@ -15,7 +14,7 @@ public class Game {
 	private Player active;
 	private State state = new State();
 	private int noMillClosedSince = 0;
-	private Map<State, Integer> history = new HashMap<State, Integer>();
+	private final Map<State, Integer> history = new HashMap<State, Integer>();
 	
 	public Game(UI ui, Player p1, Player p2) {
 		if (p1.getColor() == null || p2.getColor() == null || p1.getColor() == p2.getColor()) {
@@ -28,7 +27,7 @@ public class Game {
 	}
 
 	/**
-	 * Asks the player for the next move until it returns a legal move.
+	 * Asks the player for the next move until it returns a legally reachable new state.
 	 */
 	private static State getNewState(UI ui, Phase phase, Player active, State state) {
 		while (true) {

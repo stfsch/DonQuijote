@@ -1,7 +1,7 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class Human extends Player {
-	private UI ui;
+	private final UI ui;
 
 	public Human(Color color, UI ui) {
 		super(color);

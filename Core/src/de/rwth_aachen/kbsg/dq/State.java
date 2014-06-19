@@ -11,8 +11,8 @@ import java.util.Vector;
  * Objects of this class are immutable. 
  */
 public class State {
-	private BitSet white = new BitSet(3*8);
-	private BitSet black = new BitSet(3*8);
+	private final BitSet white = new BitSet(3*8);
+	private final BitSet black = new BitSet(3*8);
 
 	public State() {
 	}
@@ -76,8 +76,8 @@ public class State {
 
 	public State copy() {
 		State s = new State();
-		s.white = (BitSet) white.clone();
-		s.black = (BitSet) black.clone();
+		s.white.or(white);
+		s.black.or(black);
 		return s;
 	}
 	
