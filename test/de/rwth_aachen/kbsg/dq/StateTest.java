@@ -207,6 +207,20 @@ public class StateTest {
 	}
 
 	@Test
+	public void testIsMill2() {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = 0; j < 8; j += 2) {
+				State s = new State().occupy(new Point(i,j), Color.WHITE).occupy(new Point(i,j+1), Color.WHITE).occupy(new Point(i,(j+2) % 8), Color.WHITE);
+				for (int x = 0; x < 3; ++x) {
+					for (int y = 0; y < 8; ++y) {
+						assertEquals(s.isMill(new Point(x,y), Color.WHITE), x == i && (y == j || y == j+1 || y == (j+2) % 8));
+					}
+				}
+			}
+		}
+	}
+
+	@Test
 	public void testCountPieces() {
 		State s = makeState();
 		assertEquals(s.countPieces(Color.BLACK), 7);

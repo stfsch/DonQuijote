@@ -184,9 +184,9 @@ public class State {
 		
 		if (p.getIndex() % 2 == 0) {
 			line = new Vector<Point>(3);
-			line.add(new Point(p.getFrame(), mod(p.getIndex() + 0, 8)));
-			line.add(new Point(p.getFrame(), mod(p.getIndex() + 1, 8)));
-			line.add(new Point(p.getFrame(), mod(p.getIndex() + 2, 8)));
+			line.add(new Point(p.getFrame(), mod(p.getIndex() - 0, 8)));
+			line.add(new Point(p.getFrame(), mod(p.getIndex() - 1, 8)));
+			line.add(new Point(p.getFrame(), mod(p.getIndex() - 2, 8)));
 			lines.add(line);
 		}
 		
