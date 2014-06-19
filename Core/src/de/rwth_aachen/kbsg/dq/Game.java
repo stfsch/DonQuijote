@@ -68,7 +68,7 @@ public class Game {
 		}
 	}
 	
-	private static boolean mayTake(Player active, State oldState, State newState) {
+	private static boolean mustTake(Player active, State oldState, State newState) {
 		for (Point p : oldState.pointsOfField()) {
 			if (!oldState.isMill(p, active.getColor()) && newState.isMill(p, active.getColor())) {
 				return true;
@@ -118,7 +118,7 @@ public class Game {
 		case OCCUPY: {
 			State newState = getNewState(ui, phase, active, state);
 			++nOccupations;
-			if (mayTake(active, state, newState)) {
+			if (mustTake(active, state, newState)) {
 				oldPhase = Phase.OCCUPY;
 				phase = Phase.TAKE;
 				state = newState;
@@ -131,7 +131,7 @@ public class Game {
 		}
 		case MOVE: {
 			State newState = getNewState(ui, phase, active, state);
-			if (mayTake(active, state, newState)) {
+			if (mustTake(active, state, newState)) {
 				oldPhase = Phase.MOVE;
 				phase = Phase.TAKE;
 				state = newState;

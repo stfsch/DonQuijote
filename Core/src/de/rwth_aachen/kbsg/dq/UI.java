@@ -21,12 +21,6 @@ public interface UI {
 	
 	public void notifyState(State state);
 	
-	/**
-	 * Defines what should happen when the player makes an incorrect move.
-	 * Especially, a new point should be selected by the player.
-	 * @param activePlayer The active player.
-	 * @return A new point selected by the player
-	 */
 	public void notifyIllegalMove(Color active, State state, State newState);
 
 	public void notifyWin(Color winner);

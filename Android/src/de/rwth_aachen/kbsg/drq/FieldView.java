@@ -38,7 +38,7 @@ public class FieldView extends View implements UI {
 	}
 	
 	private Paint bgPaint;
-	private Paint freePaint;
+	private Paint fieldPaint;
 	private Paint selectedPaint;
 	private Paint whitePaint;
 	private Paint blackPaint;
@@ -54,7 +54,7 @@ public class FieldView extends View implements UI {
 	private BlockingQueue<Point> selection = new LinkedBlockingQueue<Point>(1);
 	
 	private Phase phase = Phase.OCCUPY;
-	private Color turn = Color.WHITE;
+	private Color active = Color.WHITE;
 	private State state = new State();
 	
     public FieldView(Context context, AttributeSet attrs) {
@@ -64,9 +64,9 @@ public class FieldView extends View implements UI {
         bgPaint.setStyle(Paint.Style.FILL);
         bgPaint.setColor(getResources().getColor(R.color.background));
 
-        freePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        freePaint.setStyle(Paint.Style.STROKE);
-        freePaint.setColor(getResources().getColor(R.color.free));
+        fieldPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fieldPaint.setStyle(Paint.Style.STROKE);
+        fieldPaint.setColor(getResources().getColor(R.color.field));
 
         selectedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         selectedPaint.setStyle(Paint.Style.STROKE);
@@ -150,7 +150,7 @@ public class FieldView extends View implements UI {
 		
 		canvas.drawPaint(bgPaint);
 		
-		Paint textPaint = turn == Color.WHITE ? whitePaint : blackPaint;
+		Paint textPaint = active == Color.WHITE ? whitePaint : blackPaint;
 		canvas.drawText(phase.name(), width / 2, textPaint.getTextSize() * 2, textPaint);
 		
 		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
@@ -158,13 +158,13 @@ public class FieldView extends View implements UI {
 			if (pi.paint != null) {
 				canvas.drawCircle(pi.x, pi.y, radius, pi.paint);
 			}
-			canvas.drawCircle(pi.x, pi.y, radius, pi.selected ? selectedPaint : freePaint);
+			canvas.drawCircle(pi.x, pi.y, radius, pi.selected ? selectedPaint : fieldPaint);
 		}
 		
 		for (Pair<Point, Point> line : lines) {
 			PointInfo pi = points.get(line.first);
 			PointInfo qi = points.get(line.second);
-			canvas.drawLine(pi.x, pi.y, qi.x, qi.y, freePaint);
+			canvas.drawLine(pi.x, pi.y, qi.x, qi.y, fieldPaint);
 		}
 	}
 
@@ -252,7 +252,7 @@ public class FieldView extends View implements UI {
 	@Override
 	public void notifyWin(Color color) {
 		this.phase = Phase.WIN;
-		this.turn = color;
+		this.active = color;
 		showToast(color.name() +" wins!", false);
 	}
 
@@ -265,7 +265,7 @@ public class FieldView extends View implements UI {
 	@Override
 	public void notifyPhase(Phase phase, Color color) {
 		this.phase = phase;
-		this.turn = color;
+		this.active = color;
 		unselectAll();
 	}
 

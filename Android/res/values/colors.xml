@@ -3,6 +3,6 @@
     <color name="background">#00a000</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="free">#555555</color>
+    <color name="field">#555555</color>
     <color name="selected">#FF0000</color>
 </resources>
