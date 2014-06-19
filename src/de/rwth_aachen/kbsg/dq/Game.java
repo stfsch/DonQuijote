@@ -46,7 +46,7 @@ public class Game {
 					State s = active.move(state);
 					while (!state.getPossibleNextStates(phase, active.getColor()).contains(s)) {
 						ui.notifyIllegalMove(active.getColor(), state, s);
-						s = active.occupy(state);
+						s = active.move(state);
 					}
 					return s;
 				}
@@ -54,7 +54,7 @@ public class Game {
 					State s = active.take(state);
 					while (!state.getPossibleNextStates(phase, active.getColor()).contains(s)) {
 						ui.notifyIllegalMove(active.getColor(), state, s);
-						s = active.occupy(state);
+						s = active.take(state);
 					}
 					return s;
 				}
