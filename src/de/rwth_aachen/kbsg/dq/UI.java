@@ -9,8 +9,6 @@ package de.rwth_aachen.kbsg.dq;
  */
 public interface UI {
 	
-	public void showState(State pState);
-	
 	/**
 	 * Prompts the player to select the next point in the game.
 	 * @param pActivePlayerColour Identifies the active player who should select
@@ -19,7 +17,7 @@ public interface UI {
 	 */
 	public Point getPoint(Color pActivePlayerColour);
 	
-	public void notifyPhase(Phase phase);
+	public void notifyPhase(Phase phase, Color color);
 	
 	public void notifyState(State state);
 	
@@ -29,9 +27,9 @@ public interface UI {
 	 * @param activePlayer The active player.
 	 * @return A new point selected by the player
 	 */
-	public void notifyIllegalMove(Player active, State state, State newState);
+	public void notifyIllegalMove(Color active, State state, State newState);
 
-	public void notifyWin(Player winner);
+	public void notifyWin(Color winner);
 	
 	public void notifyDraw();
 }

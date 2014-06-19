@@ -1,6 +1,6 @@
 package de.rwth_aachen.kbsg.dq;
 
-import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +11,8 @@ import java.util.Vector;
  * Objects of this class are immutable. 
  */
 public class State {
-	private final Color occupancy[][] = new Color[3][8];
+	private BitSet white = new BitSet(3*8);
+	private BitSet black = new BitSet(3*8);
 
 	public State() {
 	}
@@ -20,7 +21,8 @@ public class State {
 	 * The occupancy of the value is either <code>null</code> or the occupying player's color.
 	 */
 	public Color getOccupancy(Point p) {
-		return occupancy[p.getFrame()][p.getIndex()];
+		final int i = p.getFrame() * 8 + p.getIndex();
+		return white.get(i) ? Color.WHITE : black.get(i) ? Color.BLACK : null;
 	}
 	
 	/**
@@ -28,7 +30,9 @@ public class State {
 	 * This method is private because State is an immutable class.
 	 */
 	private void setOccupancy(Point p, Color c) {
-		occupancy[p.getFrame()][p.getIndex()] = c;
+		final int i = p.getFrame() * 8 + p.getIndex();
+		white.set(i, c == Color.WHITE);
+		black.set(i, c == Color.BLACK);
 	}
 
 	public boolean isOccupied(Point p) {
@@ -43,7 +47,8 @@ public class State {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Arrays.deepHashCode(occupancy);
+		result = prime * result + ((black == null) ? 0 : black.hashCode());
+		result = prime * result + ((white == null) ? 0 : white.hashCode());
 		return result;
 	}
 
@@ -56,16 +61,23 @@ public class State {
 		if (getClass() != obj.getClass())
 			return false;
 		State other = (State) obj;
-		if (!Arrays.deepEquals(occupancy, other.occupancy))
+		if (black == null) {
+			if (other.black != null)
+				return false;
+		} else if (!black.equals(other.black))
+			return false;
+		if (white == null) {
+			if (other.white != null)
+				return false;
+		} else if (!white.equals(other.white))
 			return false;
 		return true;
 	}
-	
+
 	public State copy() {
 		State s = new State();
-		for (int i = 0; i < occupancy.length; ++i) {
-			s.occupancy[i] = Arrays.copyOf(this.occupancy[i], this.occupancy[i].length);
-		}
+		s.white = (BitSet) white.clone();
+		s.black = (BitSet) black.clone();
 		return s;
 	}
 	
@@ -251,11 +263,14 @@ public class State {
 	}
 
 	public int countPieces(Color color) {
-		int men = 0;
-		for (Point p : onlyOccupiedBy(pointsOfField(), color)) {
-			++men;
+		switch (color) {
+		case WHITE:
+			return white.cardinality();
+		case BLACK:
+			return black.cardinality();
+		default:
+			return 3*8 - white.cardinality() - black.cardinality();
 		}
-		return men;
 	}
 	
 	public boolean mayJump(Color color) {

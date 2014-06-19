@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 
 public class TUI implements UI {
 	
-	@Override
 	public void showState(State pState){
 		char[][] cs= new char[3][8];
 		for (Point p : pState.pointsOfField()) {
@@ -39,7 +38,7 @@ public class TUI implements UI {
 	@Override
 	public Point getPoint(Color pActivePlayerColour) {
 		System.out.println(pActivePlayerColour.name() + " ist dran.");
-		BufferedReader in = new BufferedReader(new InputStreamReader( System.in ));
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
 			try {
 				System.out.println("Waehle einen Rahmen (0, 1 oder 2, von außen nach innen).");
@@ -55,15 +54,15 @@ public class TUI implements UI {
 					continue;
 				}
 				return new Point(frame, index);
-			} catch (IOException e) {
+			} catch (IOException | NumberFormatException e) {
 				System.out.println(e.getMessage());
 			}
 		}
 	}
 	
 	@Override
-	public void notifyPhase(Phase phase) {
-		System.out.println("Phase ist "+ phase.name() +".");
+	public void notifyPhase(Phase phase, Color color) {
+		System.out.println("Phase ist "+ phase.name() +" für "+ color.name() +".");
 	}
 
 	@Override
@@ -72,13 +71,13 @@ public class TUI implements UI {
 	}
 	
 	@Override
-	public void notifyIllegalMove(Player active, State state, State newState) {
-		System.out.println("Zug von "+ active.getColor().name() +" ungültig.");
+	public void notifyIllegalMove(Color active, State state, State newState) {
+		System.out.println("Zug von "+ active.name() +" ungültig.");
 	}
 	
 	@Override
-	public void notifyWin(Player winner) {
-		System.out.println("Spieler "+ winner.getColor().name() +" hat gewonnen.");
+	public void notifyWin(Color winner) {
+		System.out.println("Spieler "+ winner.name() +" hat gewonnen.");
 	}
 	
 	@Override
