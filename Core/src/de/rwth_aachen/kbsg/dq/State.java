@@ -25,12 +25,20 @@ public class State {
 		return white.get(i) ? Color.WHITE : black.get(i) ? Color.BLACK : null;
 	}
 	
+	private static Point indexToPoint(int i) {
+		return new Point(i / 8, i % 8);
+	}
+	
+	private static int pointToIndex(Point p) {
+		return p.getFrame() * 8 + p.getIndex();
+	}
+	
 	/**
 	 * Sets the occupancy value to either <code>null</code> or the occupying player's color.
 	 * This method is private because State is an immutable class.
 	 */
 	private void setOccupancy(Point p, Color c) {
-		final int i = p.getFrame() * 8 + p.getIndex();
+		final int i = pointToIndex(p);
 		white.set(i, c == Color.WHITE);
 		black.set(i, c == Color.BLACK);
 	}
@@ -41,6 +49,26 @@ public class State {
 	
 	public boolean isOccupiedBy(Point p, Color c) {
 		return getOccupancy(p) == c;
+	}
+	
+	public Iterable<Point> getOccupations(Color c) {
+		BitSet bs = c == Color.WHITE ? white : black;
+		Collection<Point> ps = new Vector<Point>(9);
+		for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
+			ps.add(indexToPoint(i));
+		}
+		return ps;
+	}
+	
+	public int countPieces(Color color) {
+		switch (color) {
+		case WHITE:
+			return white.cardinality();
+		case BLACK:
+			return black.cardinality();
+		default:
+			return 3*8 - white.cardinality() - black.cardinality();
+		}
 	}
 	
 	@Override
@@ -171,7 +199,7 @@ public class State {
 	 * Each of these lines is a potential mill.
 	 * Each point is part in two lines. 
 	 */
-	public Iterable<? extends Collection<Point>> linematesOf(Point p) {
+	public Iterable<? extends Collection<Point>> linesOf(Point p) {
 		Collection<Collection<Point>> lines = new Vector<Collection<Point>>(3);
 		Collection<Point> line;
 		
@@ -238,7 +266,7 @@ public class State {
 			break;
 		case TAKE:
 			for (Point p : onlyOccupiedBy(pointsOfField(), color.opponentOf())) {
-				if (!isMill(p, color.opponentOf())) {
+				if (!isMill(p, color.opponentOf()) || hasOnlyMills(color.opponentOf())) {
 					states.add(take(p));
 				}
 			}
@@ -250,7 +278,7 @@ public class State {
 	}
 	
 	public boolean isMill(Point p, Color color) {
-		for (Collection<Point> line : linematesOf(p)) {
+		for (Collection<Point> line : linesOf(p)) {
 			boolean mill = true;
 			for (Point q : line) {
 				mill &= isOccupiedBy(q, color);
@@ -261,18 +289,16 @@ public class State {
 		}
 		return false;
 	}
-
-	public int countPieces(Color color) {
-		switch (color) {
-		case WHITE:
-			return white.cardinality();
-		case BLACK:
-			return black.cardinality();
-		default:
-			return 3*8 - white.cardinality() - black.cardinality();
-		}
-	}
 	
+	public boolean hasOnlyMills(Color color) {
+		for (Point p : getOccupations(color)) {
+			if (!isMill(p, color)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public boolean mayJump(Color color) {
 		return countPieces(color) <= 3;
 	}
