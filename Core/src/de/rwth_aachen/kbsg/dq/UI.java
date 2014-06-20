@@ -15,15 +15,15 @@ public interface UI {
 	 * his next spot 
 	 * @return The selected point.
 	 */
-	public Point getPoint(Color pActivePlayerColour);
+	public Point inputPoint(Color pActivePlayerColour);
 	
-	public void notifyPhase(Phase phase, Color color);
+	public void phaseChanged(Phase phase, Color color);
 	
-	public void notifyState(State state);
+	public void stateChanged(State state);
 	
-	public void notifyIllegalMove(Color active, State state, State newState);
+	public void illegalMove(Color active, State state, State newState);
 
-	public void notifyWin(Color winner);
+	public void gameWon(Color winner);
 	
-	public void notifyDraw();
+	public void gameDrawn();
 }

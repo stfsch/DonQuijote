@@ -9,18 +9,18 @@ public class Human extends Player {
 	}
 	
 	public State occupy(State s) {
-		Point p = ui.getPoint(getColor());
+		Point p = ui.inputPoint(getColor());
 		return s.occupy(p, getColor());
 	}
 	
 	public State take(State s) {
-		Point p = ui.getPoint(getColor());
+		Point p = ui.inputPoint(getColor());
 		return s.take(p);
 	}
 	
 	public State move(State s) {
-		Point from = ui.getPoint(getColor());
-		Point to = ui.getPoint(getColor());
+		Point from = ui.inputPoint(getColor());
+		Point to = ui.inputPoint(getColor());
 		return s.move(from,  to);
 	}
 }

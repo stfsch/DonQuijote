@@ -36,7 +36,7 @@ public class Game {
 				case OCCUPY: {
 					State s = active.occupy(state);
 					while (!state.getPossibleNextStates(phase, active.getColor()).contains(s)) {
-						ui.notifyIllegalMove(active.getColor(), state, s);
+						ui.illegalMove(active.getColor(), state, s);
 						s = active.occupy(state);
 					}
 					return s;
@@ -44,7 +44,7 @@ public class Game {
 				case MOVE: {
 					State s = active.move(state);
 					while (!state.getPossibleNextStates(phase, active.getColor()).contains(s)) {
-						ui.notifyIllegalMove(active.getColor(), state, s);
+						ui.illegalMove(active.getColor(), state, s);
 						s = active.move(state);
 					}
 					return s;
@@ -52,7 +52,7 @@ public class Game {
 				case TAKE: {
 					State s = active.take(state);
 					while (!state.getPossibleNextStates(phase, active.getColor()).contains(s)) {
-						ui.notifyIllegalMove(active.getColor(), state, s);
+						ui.illegalMove(active.getColor(), state, s);
 						s = active.take(state);
 					}
 					return s;
@@ -162,14 +162,14 @@ public class Game {
 	
 	public void play() {
 		while (transition()) {
-			ui.notifyPhase(phase, active.getColor());
-			ui.notifyState(state);
+			ui.phaseChanged(phase, active.getColor());
+			ui.stateChanged(state);
 		}
-		ui.notifyState(state);
+		ui.stateChanged(state);
 		if (phase == Phase.WIN) {
-			ui.notifyWin(active.getColor());
+			ui.gameWon(active.getColor());
 		} else if (phase == Phase.DRAW) {
-			ui.notifyDraw();
+			ui.gameDrawn();
 		} else {
 			throw new RuntimeException("game ended without WIN or DRAW but "+ phase);
 		}

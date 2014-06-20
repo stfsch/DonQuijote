@@ -36,7 +36,7 @@ public class TUI implements UI {
 	}
 
 	@Override
-	public Point getPoint(Color pActivePlayerColour) {
+	public Point inputPoint(Color pActivePlayerColour) {
 		System.out.println(pActivePlayerColour.name() + " ist dran.");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
@@ -61,27 +61,27 @@ public class TUI implements UI {
 	}
 	
 	@Override
-	public void notifyPhase(Phase phase, Color color) {
+	public void phaseChanged(Phase phase, Color color) {
 		System.out.println("Phase ist "+ phase.name() +" für "+ color.name() +".");
 	}
 
 	@Override
-	public void notifyState(State state) {
+	public void stateChanged(State state) {
 		showState(state);
 	}
 	
 	@Override
-	public void notifyIllegalMove(Color active, State state, State newState) {
+	public void illegalMove(Color active, State state, State newState) {
 		System.out.println("Zug von "+ active.name() +" ungültig.");
 	}
 	
 	@Override
-	public void notifyWin(Color winner) {
+	public void gameWon(Color winner) {
 		System.out.println("Spieler "+ winner.name() +" hat gewonnen.");
 	}
 	
 	@Override
-	public void notifyDraw() {
+	public void gameDrawn() {
 		System.out.println("Unentschieden.");
 	}
 }

@@ -221,7 +221,7 @@ public class FieldView extends View implements UI {
 	}
 
 	@Override
-	public Point getPoint(Color color) {
+	public Point inputPoint(Color color) {
 		try {
 			Point p = selection.take();
 			unselect(p);
@@ -245,32 +245,32 @@ public class FieldView extends View implements UI {
 	}
 
 	@Override
-	public void notifyIllegalMove(Color color, State oldState, State newState) {
+	public void illegalMove(Color color, State oldState, State newState) {
 		showToast("Illegal move by "+ color.name() +"!");
 	}
 
 	@Override
-	public void notifyWin(Color color) {
+	public void gameWon(Color color) {
 		this.phase = Phase.WIN;
 		this.active = color;
 		showToast(color.name() +" wins!", false);
 	}
 
 	@Override
-	public void notifyDraw() {
+	public void gameDrawn() {
 		this.phase = Phase.DRAW;
 		showToast("Draw!", false);
 	}
 
 	@Override
-	public void notifyPhase(Phase phase, Color color) {
+	public void phaseChanged(Phase phase, Color color) {
 		this.phase = phase;
 		this.active = color;
 		unselectAll();
 	}
 
 	@Override
-	public void notifyState(State state) {
+	public void stateChanged(State state) {
 		this.state = state;
 		unselectAll();
 		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
