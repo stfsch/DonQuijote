@@ -199,8 +199,8 @@ public class State {
 	 * Each of these lines is a potential mill.
 	 * Each point is part in two lines. 
 	 */
-	public Iterable<? extends Collection<Point>> linesOf(Point p) {
-		Collection<Collection<Point>> lines = new Vector<Collection<Point>>(3);
+	public Iterable<? extends Iterable<Point>> linesOf(Point p) {
+		Collection<Iterable<Point>> lines = new Vector<Iterable<Point>>(3);
 		Collection<Point> line;
 		
 		line = new Vector<Point>(2);
@@ -265,8 +265,8 @@ public class State {
 			}
 			break;
 		case TAKE:
-			for (Point p : onlyOccupiedBy(pointsOfField(), color.opponentOf())) {
-				if (!isMill(p, color.opponentOf()) || hasOnlyMills(color.opponentOf())) {
+			for (Point p : onlyOccupiedBy(pointsOfField(), color.opponent())) {
+				if (!isMill(p, color.opponent()) || hasOnlyMills(color.opponent())) {
 					states.add(take(p));
 				}
 			}
@@ -278,7 +278,7 @@ public class State {
 	}
 	
 	public boolean isMill(Point p, Color color) {
-		for (Collection<Point> line : linesOf(p)) {
+		for (Iterable<Point> line : linesOf(p)) {
 			boolean mill = true;
 			for (Point q : line) {
 				mill &= isOccupiedBy(q, color);

@@ -12,8 +12,8 @@ public class ColorTest {
 	public void test() {
 		assertSame(Color.BLACK, Color.BLACK);
 		assertSame(Color.WHITE, Color.WHITE);
-		assertSame(Color.BLACK.opponentOf(), Color.WHITE);
-		assertSame(Color.WHITE.opponentOf(), Color.BLACK);
+		assertSame(Color.BLACK.opponent(), Color.WHITE);
+		assertSame(Color.WHITE.opponent(), Color.BLACK);
 	}
 
 }

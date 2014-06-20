@@ -93,7 +93,7 @@ public class Game {
 	}
 	
 	private boolean isWin(Player p) {
-		Color opponent = p.getColor().opponentOf();
+		Color opponent = p.getColor().opponent();
 		return phase == Phase.MOVE &&
 				(state.countPieces(opponent) < 3 || state.getPossibleNextStates(Phase.MOVE, opponent).isEmpty());
 	}
