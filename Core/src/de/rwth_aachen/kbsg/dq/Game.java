@@ -119,7 +119,7 @@ public class Game {
 			State newState = getNewState(ui, phase, active, state);
 			++nOccupations;
 			if (mustTake(active, state, newState)) {
-				oldPhase = Phase.OCCUPY;
+				oldPhase = nOccupations < 18 ? Phase.OCCUPY : Phase.MOVE;
 				phase = Phase.TAKE;
 				state = newState;
 			} else {
@@ -149,7 +149,6 @@ public class Game {
 			phase = oldPhase;
 			active = inactive();
 			state = newState;
-			addToHistory(state);
 			return true;
 		}
 		case WIN:
