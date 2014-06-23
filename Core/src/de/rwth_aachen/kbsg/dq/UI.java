@@ -26,4 +26,6 @@ public interface UI {
 	public void gameWon(Color winner);
 	
 	public void gameDrawn();
+	
+	public Player getPlayer(Color pColor, UI ui);
 }

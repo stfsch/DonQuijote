@@ -84,4 +84,30 @@ public class TUI implements UI {
 	public void gameDrawn() {
 		System.out.println("Unentschieden.");
 	}
+
+	@Override
+	public Player getPlayer(Color pColor, UI ui) {
+		Player player= null;
+		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler");
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		while (player == null){
+			try {
+				int choice = Integer.parseInt(in.readLine());
+				switch (choice){
+				case 1:
+					player = new Human (pColor, ui);
+					break;
+				case 2:
+					player = new RandomPlayer (pColor, ui);
+					break;
+				default:
+					System.out.println("Unzulässige Wahl, bitte neu eingeben");
+				}
+			}
+			catch (NumberFormatException |IOException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+		return player;
+	}
 }

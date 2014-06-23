@@ -16,13 +16,10 @@ public class Game {
 	private int noMillClosedSince = 0;
 	private final Map<State, Integer> history = new HashMap<State, Integer>();
 	
-	public Game(UI ui, Player p1, Player p2) {
-		if (p1.getColor() == null || p2.getColor() == null || p1.getColor() == p2.getColor()) {
-			throw new IllegalArgumentException("invalid colors of players "+ p1 +" and "+ p2);
-		}
+	public Game(UI ui){
 		this.ui = ui;
-		this.white = p1.getColor() == Color.WHITE ? p1 : p2;
-		this.black = p1.getColor() == Color.WHITE ? p2 : p1;
+		white = ui.getPlayer(Color.WHITE, ui);
+		black = ui.getPlayer(Color.BLACK, ui);
 		this.active = white;
 	}
 
