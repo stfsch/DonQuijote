@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">DroidQuijote</string>
-    <string name="reset_button">Reset</string>
+    <string name="config_button">Players</string>
+    <string name="game_button">Game</string>
 
 </resources>

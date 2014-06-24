@@ -17,6 +17,8 @@ public interface UI {
 	 */
 	public Point inputPoint(Color pActivePlayerColour);
 	
+	public Player inputPlayer(Color pColor);
+	
 	public void phaseChanged(Phase phase, Color color);
 	
 	public void stateChanged(State state);
@@ -26,6 +28,4 @@ public interface UI {
 	public void gameWon(Color winner);
 	
 	public void gameDrawn();
-	
-	public Player getPlayer(Color pColor, UI ui);
 }

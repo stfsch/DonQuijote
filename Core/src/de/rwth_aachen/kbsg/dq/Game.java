@@ -18,8 +18,8 @@ public class Game {
 	
 	public Game(UI ui){
 		this.ui = ui;
-		white = ui.getPlayer(Color.WHITE, ui);
-		black = ui.getPlayer(Color.BLACK, ui);
+		white = ui.inputPlayer(Color.WHITE);
+		black = ui.inputPlayer(Color.BLACK);
 		this.active = white;
 	}
 
@@ -100,8 +100,7 @@ public class Game {
 	 * If it returns false, the game is over.
 	 */
 	private boolean transition() {
-		
-if (isDraw()) {
+		if (isDraw()) {
 			phase = Phase.DRAW;
 			return false;
 		} else if (isWin(white)) {

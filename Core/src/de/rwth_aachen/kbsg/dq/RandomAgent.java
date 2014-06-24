@@ -1,8 +1,8 @@
 package de.rwth_aachen.kbsg.dq;
 import java.util.Random;
-public class RandomPlayer extends Player{
+public class RandomAgent extends Player{
 	Random random;
-	public RandomPlayer(Color color) {
+	public RandomAgent(Color color) {
 		super(color);
 		this.random = new Random();		
 	}

@@ -8,8 +8,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.rwth_aachen.kbsg.dq.Color;
+import de.rwth_aachen.kbsg.dq.Game;
+import de.rwth_aachen.kbsg.dq.Human;
 import de.rwth_aachen.kbsg.dq.Phase;
+import de.rwth_aachen.kbsg.dq.Player;
 import de.rwth_aachen.kbsg.dq.Point;
+import de.rwth_aachen.kbsg.dq.RandomAgent;
+import de.rwth_aachen.kbsg.dq.RuleBasedAgent;
 import de.rwth_aachen.kbsg.dq.State;
 import de.rwth_aachen.kbsg.dq.UI;
 import android.app.Activity;
@@ -19,8 +24,12 @@ import android.graphics.Paint;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 public class FieldView extends View implements UI {
@@ -53,12 +62,22 @@ public class FieldView extends View implements UI {
 	private Collection<Pair<Point, Point>> lines = new Vector<Pair<Point, Point>>();
 	private BlockingQueue<Point> selection = new LinkedBlockingQueue<Point>(1);
 	
+	private Button initButton;
+	
+	private Game game = null;
+	private Thread gameThread = null;
 	private Phase phase = Phase.OCCUPY;
 	private Color active = Color.WHITE;
 	private State state = new State();
+	private Player white = new Human(Color.WHITE, this);
+	private Player black = new Human(Color.BLACK, this);
+	
+	private long delay = 1000;
 	
     public FieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        
+        System.err.println("Hell owrld");
         
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bgPaint.setStyle(Paint.Style.FILL);
@@ -85,6 +104,94 @@ public class FieldView extends View implements UI {
         blackPaint.setTextSize(whitePaint.getTextSize());
         blackPaint.setColor(getResources().getColor(R.color.black));
     }
+    
+    public void startGame() {
+    	System.err.println("startGame "+ Thread.currentThread());
+    	if (gameThread != null) {
+    		gameThread.interrupt();
+    	}
+		game = new Game(this);
+    	System.err.println("startGame "+ Thread.currentThread());
+		gameThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+			    	System.err.println("game.play "+ Thread.currentThread());
+					game.play();
+				} catch (GameInterruptedException exc) {
+					exc.printStackTrace();
+				}
+			}
+		};
+    	System.err.println("startGame "+ Thread.currentThread());
+		gameThread.start();
+    }
+    
+	public void registerConfigButton(Button initButton) {
+		this.initButton = initButton;
+		initButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// reverse order, because the second popup menu is layover of the first
+				showPlayerMenu(Color.BLACK);
+				showPlayerMenu(Color.WHITE);
+				// that should be the final proof that I'm the king of GUI
+			}
+		});
+	}
+	
+	private void showPlayerMenu(final Color c) {
+//		showToast("Choose player "+ c);
+		final int HUMAN = 0;
+		final int RANDOM = 1;
+		final int RULE_BASED = 2;
+		((Activity) getContext()).runOnUiThread(new Runnable() {
+			public void run() {
+		        PopupMenu popupMenu = new PopupMenu(getContext(), initButton);
+		        popupMenu.getMenu().add(Menu.NONE, HUMAN, Menu.NONE, "Human");
+		        popupMenu.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, "Random");
+		        popupMenu.getMenu().add(Menu.NONE, RULE_BASED, Menu.NONE, "Rule-based");
+		        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						Player p;
+						switch (item.getItemId()) {
+						case HUMAN:
+							p = new Human(c, FieldView.this);
+							break;
+						case RANDOM:
+							p = new RandomAgent(c);
+							break;
+						case RULE_BASED:
+							p = new RuleBasedAgent(c);
+							break;
+						default:
+							throw new RuntimeException();
+						}
+						if (c == Color.WHITE) {
+							white = p;
+						} else {
+							black = p;
+						}
+						return true;
+					}
+				});
+		    	System.err.println("popupMenu.show "+ Thread.currentThread());
+		        popupMenu.show();
+			}
+		});
+	}
+
+	public void registerGameButton(Button initButton) {
+		this.initButton = initButton;
+		initButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				showToast("starting game");
+				startGame();
+			}
+		});
+	}
 
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -228,8 +335,13 @@ public class FieldView extends View implements UI {
 //			showToast(p.toString());
 			return p;
 		} catch (InterruptedException exc) {
-			throw new RuntimeException(exc);
+			throw new GameInterruptedException(exc);
 		}
+	}
+	
+	@Override
+	public Player inputPlayer(final Color c) {
+		return c == Color.WHITE ? white : black;
 	}
 
 	public void showToast(String msg) {
@@ -280,5 +392,12 @@ public class FieldView extends View implements UI {
 			pi.paint = c == Color.WHITE ? whitePaint : c == Color.BLACK ? blackPaint : null;
 		}
 		postInvalidate();
+		try {
+			if (!(white instanceof Human || black instanceof Human)) {
+				Thread.sleep(delay);
+			}
+		} catch (InterruptedException exc) {
+			throw new GameInterruptedException(exc);
+		}
 	}
 }
