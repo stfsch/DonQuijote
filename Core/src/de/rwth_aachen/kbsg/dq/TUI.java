@@ -88,7 +88,7 @@ public class TUI implements UI {
 	@Override
 	public Player getPlayer(Color pColor, UI ui) {
 		Player player= null;
-		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler");
+		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler, 3 = regel-basierter Spieler");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (player == null){
 			try {
@@ -98,7 +98,10 @@ public class TUI implements UI {
 					player = new Human (pColor, ui);
 					break;
 				case 2:
-					player = new RandomPlayer (pColor, ui);
+					player = new RandomPlayer (pColor);
+					break;
+				case 3:
+					player = new RuleBasedAgent (pColor);
 					break;
 				default:
 					System.out.println("Unzulässige Wahl, bitte neu eingeben");

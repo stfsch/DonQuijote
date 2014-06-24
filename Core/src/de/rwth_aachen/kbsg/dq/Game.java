@@ -100,7 +100,8 @@ public class Game {
 	 * If it returns false, the game is over.
 	 */
 	private boolean transition() {
-		if (isDraw()) {
+		
+if (isDraw()) {
 			phase = Phase.DRAW;
 			return false;
 		} else if (isWin(white)) {
