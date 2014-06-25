@@ -48,8 +48,8 @@ public class StateTest {
 	@Test
 	public void testCopy() {
 		State s = new State();
-		assertNotSame(s, s.copy());
-		assertTrue(s.equals(s.copy()));
+		assertNotSame(s, new State(s));
+		assertTrue(s.equals(new State(s)));
 	}
 
 	@Test
@@ -190,9 +190,9 @@ public class StateTest {
 	}
 
 	@Test
-	public void testGetPossibleNextStates() {
-//		fail("Not yet implemented");
-	}
+			public void testGetPossibleNextStates() {
+		//		fail("Not yet implemented");
+			}
 
 	@Test
 	public void testIsMill() {

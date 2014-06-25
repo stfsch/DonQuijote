@@ -7,7 +7,8 @@ public class RuleBasedAgent extends Player{
 	}
 
 	@Override
-	public State occupy(State s) {
+	public State occupy(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		Random random = new Random();
 		Point p = new Point (random.nextInt(3), random.nextInt(8));
 			if(getHalfMill(s, getColor()) != null){
@@ -39,7 +40,8 @@ public class RuleBasedAgent extends Player{
 
 
 	@Override
-	public State take(State s) {
+	public State take(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		Point p = null;
 		if(s.hasOnlyMills(color.opponent()) == true){
 			for(int i=1; i<=7; i+=2){
@@ -84,7 +86,8 @@ public class RuleBasedAgent extends Player{
 	}
 
 	@Override
-	public State move(State s) {
+	public State move(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		Point k = null;
 		Point f = null;
 		if(getOpenMill(s, color)!= null) {

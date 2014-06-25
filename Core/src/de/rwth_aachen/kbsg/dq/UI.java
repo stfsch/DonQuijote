@@ -19,11 +19,9 @@ public interface UI {
 	
 	public Player inputPlayer(Color pColor);
 	
-	public void phaseChanged(Phase phase, Color color);
+	public void stateMachineChanged(StateMachine state);
 	
-	public void stateChanged(State state);
-	
-	public void illegalMove(Color active, State state, State newState);
+	public void illegalMove(Color active, StateMachine stateMachine, State newState);
 
 	public void gameWon(Color winner);
 	

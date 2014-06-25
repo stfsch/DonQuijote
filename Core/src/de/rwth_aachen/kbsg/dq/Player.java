@@ -12,9 +12,9 @@ public abstract class Player {
 		return color;
 	}
 	
-	public abstract State occupy(State s);
+	public abstract State occupy(StateMachine s);
 	
-	public abstract State take(State s);
+	public abstract State take(StateMachine s);
 	
-	public abstract State move(State s);
+	public abstract State move(StateMachine s);
 }

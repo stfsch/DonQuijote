@@ -59,19 +59,14 @@ public class TUI implements UI {
 			}
 		}
 	}
-	
-	@Override
-	public void phaseChanged(Phase phase, Color color) {
-		System.out.println("Phase ist "+ phase.name() +" für "+ color.name() +".");
-	}
 
 	@Override
-	public void stateChanged(State state) {
-		showState(state);
+	public void stateMachineChanged(StateMachine stateMachine) {
+		showState(stateMachine.getState());
 	}
 	
 	@Override
-	public void illegalMove(Color active, State state, State newState) {
+	public void illegalMove(Color active, StateMachine stateMachine, State newState) {
 		System.out.println("Zug von "+ active.name() +" ungültig.");
 	}
 	

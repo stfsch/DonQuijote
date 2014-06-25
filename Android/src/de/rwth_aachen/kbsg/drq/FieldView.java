@@ -16,6 +16,7 @@ import de.rwth_aachen.kbsg.dq.Point;
 import de.rwth_aachen.kbsg.dq.RandomAgent;
 import de.rwth_aachen.kbsg.dq.RuleBasedAgent;
 import de.rwth_aachen.kbsg.dq.State;
+import de.rwth_aachen.kbsg.dq.StateMachine;
 import de.rwth_aachen.kbsg.dq.UI;
 import android.app.Activity;
 import android.content.Context;
@@ -357,7 +358,7 @@ public class FieldView extends View implements UI {
 	}
 
 	@Override
-	public void illegalMove(Color color, State oldState, State newState) {
+	public void illegalMove(Color color, StateMachine stateMachine, State newState) {
 		showToast("Illegal move by "+ color.name() +"!");
 	}
 
@@ -375,15 +376,10 @@ public class FieldView extends View implements UI {
 	}
 
 	@Override
-	public void phaseChanged(Phase phase, Color color) {
-		this.phase = phase;
-		this.active = color;
-		unselectAll();
-	}
-
-	@Override
-	public void stateChanged(State state) {
-		this.state = state;
+	public void stateMachineChanged(StateMachine stateMachine) {
+		this.state = stateMachine.getState();
+		this.active = stateMachine.getActiveColor();
+		this.phase = stateMachine.getPhase();
 		unselectAll();
 		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
 			Point p = e.getKey();

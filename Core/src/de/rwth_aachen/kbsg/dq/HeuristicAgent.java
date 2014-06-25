@@ -8,7 +8,8 @@ public class HeuristicAgent extends Player{
 	}
 
 	@Override
-	public State occupy(State s) {
+	public State occupy(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
 		for (State possibleNextState : s.getPossibleNextStates(Phase.OCCUPY, getColor())){
@@ -25,7 +26,8 @@ public class HeuristicAgent extends Player{
 	}
 
 	@Override
-	public State take(State s) {
+	public State take(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
 		for (State possibleNextState : s.getPossibleNextStates(Phase.TAKE, getColor())){
@@ -42,7 +44,8 @@ public class HeuristicAgent extends Player{
 	}
 
 	@Override
-	public State move(State s) {
+	public State move(StateMachine stateMachine) {
+		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
 		for (State possibleNextState : s.getPossibleNextStates(Phase.MOVE, getColor())){

@@ -17,6 +17,11 @@ public class State {
 	public State() {
 	}
 	
+	public State(State s) {
+		white.or(s.white);
+		black.or(s.black);
+	}
+	
 	/**
 	 * The occupancy of the value is either <code>null</code> or the occupying player's color.
 	 */
@@ -102,13 +107,6 @@ public class State {
 		return true;
 	}
 
-	public State copy() {
-		State s = new State();
-		s.white.or(white);
-		s.black.or(black);
-		return s;
-	}
-	
 	/**
 	 * Creates a new state where the point is occupied by the given player.
 	 * @throws IllegalOccupationException if the point was occupied
@@ -117,7 +115,7 @@ public class State {
 		if (getOccupancy(p) != null) {
 			throw new IllegalOccupationException("point "+ p +" is already occupied");
 		}
-		State s = copy();
+		State s = new State(this);
 		s.setOccupancy(p, c);
 		return s;
 	}
@@ -133,7 +131,7 @@ public class State {
 		if (isOccupied(q)) {
 			throw new IllegalMoveException("point "+ q +" is already occupied");
 		}
-		State s = copy();
+		State s = new State(this);
 		Color c = getOccupancy(p);
 		s.setOccupancy(p, null);
 		s.setOccupancy(q, c);
@@ -148,7 +146,7 @@ public class State {
 		if (!isOccupied(p)) {
 			throw new IllegalTakeException("point "+ p +" is not occupied");
 		}
-		State s = copy();
+		State s = new State(this);
 		s.setOccupancy(p, null);
 		return s;
 	}

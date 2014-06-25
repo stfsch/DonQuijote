@@ -8,22 +8,22 @@ public class RandomAgent extends Player{
 	}
 
 	@Override
-	public State occupy(State s) {
+	public State occupy(StateMachine stateMachine) {
 		Point p = new Point (random.nextInt(3), random.nextInt(8));
-		return s.occupy(p, getColor());
+		return stateMachine.getState().occupy(p, getColor());
 	}
 
 	@Override
-	public State take(State s) {
+	public State take(StateMachine stateMachine) {
 		Point p = new Point(random.nextInt(3), random.nextInt(8));
-		return s.take(p);
+		return stateMachine.getState().take(p);
 	}
 
 	@Override
-	public State move(State s) {
+	public State move(StateMachine stateMachine) {
 		Point p = new Point(random.nextInt(3), random.nextInt(8));
 		Point q = new Point(random.nextInt(3), random.nextInt(8));
-		return s.move(p, q);
+		return stateMachine.getState().move(p, q);
 	}
 	
 
