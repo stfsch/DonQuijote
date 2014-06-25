@@ -162,7 +162,7 @@ public class State {
 			}
 		}
 	}
-	
+
 	public Iterable<Point> pointsOfField() {
 		return points;
 	}

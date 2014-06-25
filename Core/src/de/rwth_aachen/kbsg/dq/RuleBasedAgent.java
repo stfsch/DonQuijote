@@ -42,7 +42,6 @@ public class RuleBasedAgent extends Player{
 	public State take(State s) {
 		Point p = null;
 		if(s.hasOnlyMills(color.opponent()) == true){
-			//Point p;
 			for(int i=1; i<=7; i+=2){
 				p = new Point (1, i);
 				if(s.isOccupiedBy(p, color.opponent()) == true){
@@ -148,13 +147,6 @@ public class RuleBasedAgent extends Player{
 			k = new Point(random.nextInt(3), random.nextInt(8));
 			return s.move(f, k);
 		}
-
-
-//	 * and an empty point.
-//	 * @param s the state of the board
-//	 * @param p the occupied point
-//	 * @return returns true when the given point is part of a half mill.
-//	 */
 	/**
 	 * tests whether an occupied point is part of a half mill 
 	 * @param s the state of the board
