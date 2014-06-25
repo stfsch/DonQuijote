@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import de.rwth_aachen.kbsg.dq.Color;
 import de.rwth_aachen.kbsg.dq.Game;
+import de.rwth_aachen.kbsg.dq.HeuristicAgent;
 import de.rwth_aachen.kbsg.dq.Human;
 import de.rwth_aachen.kbsg.dq.Phase;
 import de.rwth_aachen.kbsg.dq.Player;
@@ -146,12 +147,14 @@ public class FieldView extends View implements UI {
 		final int HUMAN = 0;
 		final int RANDOM = 1;
 		final int RULE_BASED = 2;
+		final int HEURISTIC = 3;
 		((Activity) getContext()).runOnUiThread(new Runnable() {
 			public void run() {
 		        PopupMenu popupMenu = new PopupMenu(getContext(), initButton);
 		        popupMenu.getMenu().add(Menu.NONE, HUMAN, Menu.NONE, "Human");
 		        popupMenu.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, "Random");
 		        popupMenu.getMenu().add(Menu.NONE, RULE_BASED, Menu.NONE, "Rule-based");
+		        popupMenu.getMenu().add(Menu.NONE, HEURISTIC, Menu.NONE, "Heuristic");
 		        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
@@ -165,6 +168,9 @@ public class FieldView extends View implements UI {
 							break;
 						case RULE_BASED:
 							p = new RuleBasedAgent(c);
+							break;
+						case HEURISTIC:
+							p = new HeuristicAgent(c);
 							break;
 						default:
 							throw new RuntimeException();
