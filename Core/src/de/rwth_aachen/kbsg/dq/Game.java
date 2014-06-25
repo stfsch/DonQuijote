@@ -1,5 +1,7 @@
 package de.rwth_aachen.kbsg.dq;
 
+import java.util.Map;
+
 public class Game {
 	private final UI ui;
 	private final Player white;
@@ -15,34 +17,42 @@ public class Game {
 	/**
 	 * Asks the player for the next move until it returns a legally reachable new state.
 	 */
-	private State getNewState() {
+	private StateMachine getNextLegalStateMachine() {
 		Player p = stateMachine.getActiveColor() == Color.WHITE ? white : black;
+		Map<State, StateMachine> sms = stateMachine.getPossibleNextStateMachines();
+		StateMachine firstStateMachine = sms.values().iterator().next();
+		if (firstStateMachine.getPhase().isTerminal()) {
+			return firstStateMachine;
+		}
 		while (true) {
 			try {
 				switch (stateMachine.getPhase()) {
 				case OCCUPY: {
 					State s = p.occupy(stateMachine);
-					while (!stateMachine.getPossibleNextStates().contains(s)) {
+					StateMachine m;
+					while ((m = sms.get(s)) == null) {
 						ui.illegalMove(p.getColor(), stateMachine, s);
 						s = p.occupy(stateMachine);
 					}
-					return s;
+					return m;
 				}
 				case MOVE: {
 					State s = p.move(stateMachine);
-					while (!stateMachine.getPossibleNextStates().contains(s)) {
+					StateMachine m;
+					while ((m = sms.get(s)) == null) {
 						ui.illegalMove(p.getColor(), stateMachine, s);
 						s = p.move(stateMachine);
 					}
-					return s;
+					return m;
 				}
 				case TAKE: {
 					State s = p.take(stateMachine);
-					while (!stateMachine.getPossibleNextStates().contains(s)) {
+					StateMachine m;
+					while ((m = sms.get(s)) == null) {
 						ui.illegalMove(p.getColor(), stateMachine, s);
 						s = p.take(stateMachine);
 					}
-					return s;
+					return m;
 				}
 				case WIN:
 				case DRAW:
@@ -56,17 +66,12 @@ public class Game {
 	}
 	
 	private boolean transition() {
-		if (stateMachine.getPhase() == Phase.DRAW || stateMachine.getPhase() == Phase.WIN) {
+		if (stateMachine.getPhase().isTerminal()) {
 			return false;
 		} else {
-			State newState = getNewState();
-			for (StateMachine m : stateMachine.getPossibleNextStateMachines()) {
-				if (m.getState().equals(newState)) {
-					stateMachine = m;
-					return true;
-				}
-			}
-			return false;
+			stateMachine = getNextLegalStateMachine();
+			assert stateMachine != null;
+			return true;
 		}
 	}
 	

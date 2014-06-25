@@ -63,6 +63,7 @@ public class TUI implements UI {
 	@Override
 	public void stateMachineChanged(StateMachine stateMachine) {
 		showState(stateMachine.getState());
+		System.out.println(stateMachine.getActiveColor() +" ist in Phase "+ stateMachine.getPhase());
 	}
 	
 	@Override

@@ -1,10 +1,8 @@
 package de.rwth_aachen.kbsg.dq;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A state machine encapsulates a state and transitions to successor state machines.
@@ -29,7 +27,7 @@ public class StateMachine {
 		this.noMillClosedSince = 0;
 	}
 	
-	protected StateMachine(State s, StateMachine m) {
+	private StateMachine(State s, StateMachine m) {
 		this.state = s;
 		this.pred = m;
 		this.nOccupations = m.nOccupations;
@@ -78,40 +76,50 @@ public class StateMachine {
 		return phase == Phase.MOVE && (state.countPieces(c.opponent()) < 3 || state.getPossibleNextStates(Phase.MOVE, c.opponent()).isEmpty());
 	}
 	
-	public Collection<StateMachine> getPossibleNextStateMachines() {
+	/**
+	 * Computes a non-empty map of states and state machines.
+	 * Using a map of state to state machine allows to efficiently determine whether or not a certain state is reachable and access the corresponding state machine.
+	 * The set is never empty, because if there is no possible move, the respective player has lost and in this case a singleton map is returned.
+	 */
+	public Map<State, StateMachine> getPossibleNextStateMachines() {
 		if (isDraw()) {
-			phase = Phase.DRAW;
-			return Collections.emptySet();
+			StateMachine m = new StateMachine(state, this);
+			m.phase = Phase.DRAW;
+			return Collections.singletonMap(m.state, m);
 		} else if (isWin(Color.WHITE)) {
-			phase = Phase.WIN;
-			active = Color.WHITE;
+			StateMachine m = new StateMachine(state, this);
+			m.phase = Phase.WIN;
+			m.active = Color.WHITE;
+			return Collections.singletonMap(m.state, m);
 		} else if (isWin(Color.BLACK)) {
-			phase = Phase.WIN;
-			active = Color.BLACK;
+			StateMachine m = new StateMachine(state, this);
+			m.phase = Phase.WIN;
+			m.active = Color.BLACK;
+			return Collections.singletonMap(m.state, m);
 		}
 		
 		switch (phase) {
 		case OCCUPY: {
-			Collection<StateMachine> ms = new Vector<StateMachine>(24);
-			for (State newState : state.getPossibleNextStates(phase, active)) {
-				StateMachine m = new StateMachine(newState, this);
+			Map<State, StateMachine> sms = new HashMap<State, StateMachine>();
+			for (State s : state.getPossibleNextStates(phase, active)) {
+				StateMachine m = new StateMachine(s, this);
 				m.nOccupations = nOccupations + 1;
-				if (mustTake(active, state, newState)) {
+				if (mustTake(active, state, s)) {
 					m.oldPhase = m.nOccupations < 18 ? Phase.OCCUPY : Phase.MOVE;
 					m.phase = Phase.TAKE;
 				} else {
 					m.phase = m.nOccupations < 18 ? Phase.OCCUPY : Phase.MOVE;
 					m.active = active.opponent();
 				}
-				ms.add(m);
+				sms.put(s, m);
 			}
-			return ms;
+			return sms;
 		}
 		case MOVE: {
-			Collection<StateMachine> ms = new Vector<StateMachine>(24);
-			for (State newState : state.getPossibleNextStates(phase, active)) {
-				StateMachine m = new StateMachine(newState, this);
-				if (mustTake(active, state, newState)) {
+			Map<State, StateMachine> sms = new HashMap<State, StateMachine>();
+			for (State s : state.getPossibleNextStates(phase, active)) {
+				StateMachine m = new StateMachine(s, this);
+				if (mustTake(active, state, s)) {
 					m.oldPhase = Phase.MOVE;
 					m.phase = Phase.TAKE;
 					m.noMillClosedSince = 0;
@@ -119,34 +127,26 @@ public class StateMachine {
 					m.active = active.opponent();
 					m.noMillClosedSince = noMillClosedSince + 1;
 				}
-				ms.add(m);
+				sms.put(s, m);
 			}
-			return ms;
+			return sms;
 		}
 		case TAKE: {
-			Collection<StateMachine> ms = new Vector<StateMachine>(24);
-			for (State newState : state.getPossibleNextStates(phase, active)) {
-				StateMachine m = new StateMachine(newState, this);
+			Map<State, StateMachine> sms = new HashMap<State, StateMachine>();
+			for (State s : state.getPossibleNextStates(phase, active)) {
+				StateMachine m = new StateMachine(s, this);
 				m.phase = oldPhase;
-				m.active = active;
-				ms.add(m);
+				m.active = active.opponent();
+				sms.put(s, m);
 			}
-			return ms;
+			return sms;
 		}
 		case WIN:
-			return Collections.emptyList();
+			return Collections.emptyMap();
 		case DRAW:
-			return Collections.emptyList();
+			return Collections.emptyMap();
 		default:
-			return Collections.emptyList();
+			return Collections.emptyMap();
 		}
-	}
-	
-	public Set<State> getPossibleNextStates() {
-		Set<State> states = new HashSet<State>();
-		for (StateMachine sm : getPossibleNextStateMachines()) {
-			states.add(sm.getState());
-		}
-		return states;
 	}
 }
