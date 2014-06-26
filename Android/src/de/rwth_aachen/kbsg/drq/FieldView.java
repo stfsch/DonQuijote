@@ -1,51 +1,35 @@
 package de.rwth_aachen.kbsg.drq;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import de.rwth_aachen.kbsg.dq.Color;
-import de.rwth_aachen.kbsg.dq.Game;
-import de.rwth_aachen.kbsg.dq.HeuristicAgent;
-import de.rwth_aachen.kbsg.dq.Human;
-import de.rwth_aachen.kbsg.dq.MiniMaxAgent;
-import de.rwth_aachen.kbsg.dq.Phase;
-import de.rwth_aachen.kbsg.dq.Player;
 import de.rwth_aachen.kbsg.dq.Point;
-import de.rwth_aachen.kbsg.dq.RandomAgent;
-import de.rwth_aachen.kbsg.dq.RuleBasedAgent;
-import de.rwth_aachen.kbsg.dq.State;
 import de.rwth_aachen.kbsg.dq.StateMachine;
-import de.rwth_aachen.kbsg.dq.UI;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.PopupMenu;
-import android.widget.Toast;
 
-public class FieldView extends View implements UI {
-	private static class PointInfo {
-		public Paint paint;
-		public boolean selected = false;
-		public float x;
-		public float y;
-		
-		public PointInfo(Paint paint, float x, float y) {
-			this.paint = paint;
-			this.x = x;
-			this.y = y;
+public class FieldView extends View {
+	public static interface Listener {
+		public void onPointSelected(Point p);
+		public void onPointUnselected(Point p);
+	}
+	
+	public static class Adapter implements Listener {
+		@Override
+		public void onPointSelected(Point p) {
+		}
+
+		@Override
+		public void onPointUnselected(Point p) {
 		}
 	}
 	
@@ -61,26 +45,15 @@ public class FieldView extends View implements UI {
 	private float radius;
 	private float minPointDist = Float.MAX_VALUE;
 	
-	private Map<Point, PointInfo> points = new HashMap<Point, PointInfo>();
 	private Collection<Pair<Point, Point>> lines = new Vector<Pair<Point, Point>>();
-	private BlockingQueue<Point> selection = new LinkedBlockingQueue<Point>(1);
+	private BlockingQueue<Point> selection = new ArrayBlockingQueue<Point>(1);
 	
-	private Button initButton;
+	private Listener listener = new Adapter();
 	
-	private Game game = null;
-	private Thread gameThread = null;
-	private Phase phase = Phase.OCCUPY;
-	private Color active = Color.WHITE;
-	private State state = new State();
-	private Player white = new Human(Color.WHITE, this);
-	private Player black = new Human(Color.BLACK, this);
-	
-	private long delay = 1000;
+	private StateMachine stateMachine = new StateMachine();
 	
     public FieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        
-        System.err.println("Hell owrld");
         
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bgPaint.setStyle(Paint.Style.FILL);
@@ -108,102 +81,25 @@ public class FieldView extends View implements UI {
         blackPaint.setColor(getResources().getColor(R.color.black));
     }
     
-    public void startGame() {
-    	System.err.println("startGame "+ Thread.currentThread());
-    	if (gameThread != null) {
-    		gameThread.interrupt();
-    	}
-		game = new Game(this);
-    	System.err.println("startGame "+ Thread.currentThread());
-		gameThread = new Thread() {
-			@Override
-			public void run() {
-				try {
-			    	System.err.println("game.play "+ Thread.currentThread());
-					game.play();
-				} catch (GameInterruptedException exc) {
-					exc.printStackTrace();
-				}
-			}
-		};
-    	System.err.println("startGame "+ Thread.currentThread());
-		gameThread.start();
-    }
-    
-	public void registerConfigButton(Button initButton) {
-		this.initButton = initButton;
-		initButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// reverse order, because the second popup menu is layover of the first
-				showPlayerMenu(Color.BLACK);
-				showPlayerMenu(Color.WHITE);
-				// that should be the final proof that I'm the king of GUI
-			}
-		});
-	}
-	
-	private void showPlayerMenu(final Color c) {
-//		showToast("Choose player "+ c);
-		final int HUMAN = 0;
-		final int RANDOM = 1;
-		final int RULE_BASED = 2;
-		final int HEURISTIC = 3;
-		final int MINIMAX = 4;
-		((Activity) getContext()).runOnUiThread(new Runnable() {
-			public void run() {
-		        PopupMenu popupMenu = new PopupMenu(getContext(), initButton);
-		        popupMenu.getMenu().add(Menu.NONE, HUMAN, Menu.NONE, "Human");
-		        popupMenu.getMenu().add(Menu.NONE, RANDOM, Menu.NONE, "Random");
-		        popupMenu.getMenu().add(Menu.NONE, RULE_BASED, Menu.NONE, "Rule-based");
-		        popupMenu.getMenu().add(Menu.NONE, HEURISTIC, Menu.NONE, "Heuristic");
-		        popupMenu.getMenu().add(Menu.NONE, MINIMAX, Menu.NONE, "MiniMax");
-		        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						Player p;
-						switch (item.getItemId()) {
-						case HUMAN:
-							p = new Human(c, FieldView.this);
-							break;
-						case RANDOM:
-							p = new RandomAgent(c);
-							break;
-						case RULE_BASED:
-							p = new RuleBasedAgent(c);
-							break;
-						case HEURISTIC:
-							p = new HeuristicAgent(c);
-							break;
-						case MINIMAX:
-							p = new MiniMaxAgent(c);
-							break;
-						default:
-							throw new RuntimeException();
-						}
-						if (c == Color.WHITE) {
-							white = p;
-						} else {
-							black = p;
-						}
-						return true;
-					}
-				});
-		    	System.err.println("popupMenu.show "+ Thread.currentThread());
-		        popupMenu.show();
-			}
-		});
+	public Listener getListener() {
+		return listener;
 	}
 
-	public void registerGameButton(Button initButton) {
-		this.initButton = initButton;
-		initButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				showToast("starting game");
-				startGame();
-			}
-		});
+	public void setListener(Listener listener) {
+		this.listener = listener;
+	}
+
+	public void updateStateMachine(StateMachine stateMachine) {
+		this.stateMachine = stateMachine;
+		postInvalidate();
+	}
+	
+	public Point waitForSelection() {
+		try {
+			return selection.take();
+		} catch (InterruptedException e) {
+			throw new GameInterruptedException(e);
+		}
 	}
 
 	@Override
@@ -214,11 +110,6 @@ public class FieldView extends View implements UI {
 		dist = Math.min(width, height) * 85 / 100 / 2;
 		radius = dist / 15;
 
-		for (Point p : state.pointsOfField()) {
-			Paint paint = state.isOccupiedBy(p, Color.BLACK) ? blackPaint : state.isOccupiedBy(p, Color.WHITE) ? whitePaint : null;
-			points.put(p, new PointInfo(paint, toX(p), toY(p)));
-		}
-		
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 8; ++j) {
 				Point p = new Point(i, j);
@@ -236,13 +127,11 @@ public class FieldView extends View implements UI {
 			}
 		}
 		
-		for (Point p : state.pointsOfField()) {
-			for (Point q : state.pointsOfField()) {
+		for (Point p : stateMachine.getState().pointsOfField()) {
+			for (Point q : stateMachine.getState().pointsOfField()) {
 				if (!p.equals(q)) {
-					PointInfo pi = points.get(p);
-					PointInfo qi = points.get(q);
-					double x = pi.x - qi.x;
-					double y = pi.y - qi.y;
+					double x = toX(p) - toX(q);
+					double y = toY(p) - toY(q);
 					double dist = Math.sqrt(x*x + y*y);
 					if (dist < minPointDist) {
 						minPointDist = (float) dist;
@@ -270,21 +159,20 @@ public class FieldView extends View implements UI {
 		
 		canvas.drawPaint(bgPaint);
 		
-		Paint textPaint = active == Color.WHITE ? whitePaint : blackPaint;
-		canvas.drawText(phase.name(), width / 2, textPaint.getTextSize() * 2, textPaint);
+		Paint textPaint = stateMachine.getActiveColor() == Color.WHITE ? whitePaint : blackPaint;
+		canvas.drawText(stateMachine.getPhase().name(), width / 2, textPaint.getTextSize() * 2, textPaint);
 		
-		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
-			PointInfo pi = e.getValue();
-			if (pi.paint != null) {
-				canvas.drawCircle(pi.x, pi.y, radius, pi.paint);
+		for (Point p : stateMachine.getState().pointsOfField()) {
+			if (stateMachine.getState().isOccupiedBy(p, Color.WHITE)) {
+				canvas.drawCircle(toX(p), toY(p), radius, whitePaint);
+			} else if (stateMachine.getState().isOccupiedBy(p, Color.BLACK)) {
+				canvas.drawCircle(toX(p), toY(p), radius, blackPaint);
 			}
-			canvas.drawCircle(pi.x, pi.y, radius, pi.selected ? selectedPaint : fieldPaint);
+			canvas.drawCircle(toX(p), toY(p), radius, selection.contains(p) ? selectedPaint : fieldPaint);
 		}
 		
 		for (Pair<Point, Point> line : lines) {
-			PointInfo pi = points.get(line.first);
-			PointInfo qi = points.get(line.second);
-			canvas.drawLine(pi.x, pi.y, qi.x, qi.y, fieldPaint);
+			canvas.drawLine(toX(line.first), toY(line.first), toX(line.second), toY(line.second), fieldPaint);
 		}
 	}
 
@@ -296,16 +184,14 @@ public class FieldView extends View implements UI {
 			return false;
 		}
 		long now = SystemClock.elapsedRealtime();
-		if (now - lastEvent < 100) {
+		if (now - lastEvent < 500) {
 			return false;
 		}
 		float x = event.getX();
 		float y = event.getY();
-		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
-			Point p = e.getKey();
-			PointInfo pi = e.getValue();
+		for (Point p : stateMachine.getState().pointsOfField()) {
 			float r = minPointDist * 0.8f;
-			if (pi.x - r <= x && x <= pi.x + r && pi.y - r <= y && y <= pi.y + r) {
+			if (toX(p) - r <= x && x <= toX(p) + r && toY(p) - r <= y && y <= toY(p) + r) {
 				toggleSelect(p);
 				lastEvent = now;
 				return true;
@@ -314,98 +200,28 @@ public class FieldView extends View implements UI {
 		return false;
 	}
 	
-	private void toggleSelect(Point p) {
-		PointInfo pi = points.get(p);
-		pi.selected = !pi.selected;
-		selection.clear();
-		if (pi.selected) {
+	public void toggleSelect(Point p) {
+		if (selection.remove(p)) {
+			listener.onPointUnselected(p);
+		} else {
 			selection.add(p);
+			listener.onPointSelected(p);
 		}
 		postInvalidate();
 	}
 	
-	private void unselect(Point p) {
-		PointInfo pi = points.get(p);
-		pi.selected = false;
-		selection.remove(p);
+	public void unselect(Point p) {
+		if (selection.remove(p)) {
+			listener.onPointUnselected(p);
+		}
 		postInvalidate();
 	}
 
-	private void unselectAll() {
+	public void unselectAll() {
 		for (Point p : selection) {
-			PointInfo pi = points.get(p);
-			pi.selected = false;
+			unselect(p);
 		}
 		selection.clear();
 		postInvalidate();
-	}
-
-	@Override
-	public Point inputPoint(Color color) {
-		try {
-			Point p = selection.take();
-			unselect(p);
-//			showToast(p.toString());
-			return p;
-		} catch (InterruptedException exc) {
-			throw new GameInterruptedException(exc);
-		}
-	}
-	
-	@Override
-	public Player inputPlayer(final Color c) {
-		return c == Color.WHITE ? white : black;
-	}
-
-	public void showToast(String msg) {
-		showToast(msg, true);
-	}
-	
-	public void showToast(final String msg, final boolean shortDuration) {
-		((Activity) getContext()).runOnUiThread(new Runnable() {
-			public void run() {
-				Toast.makeText(getContext(), msg, shortDuration ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG).show();
-			}
-		});
-	}
-
-	@Override
-	public void illegalMove(Color color, StateMachine stateMachine, State newState) {
-		showToast("Illegal move by "+ color.name() +"!");
-	}
-
-	@Override
-	public void gameWon(Color color) {
-		this.phase = Phase.WIN;
-		this.active = color;
-		showToast(color.name() +" wins!", false);
-	}
-
-	@Override
-	public void gameDrawn() {
-		this.phase = Phase.DRAW;
-		showToast("Draw!", false);
-	}
-
-	@Override
-	public void stateMachineChanged(StateMachine stateMachine) {
-		this.state = stateMachine.getState();
-		this.active = stateMachine.getActiveColor();
-		this.phase = stateMachine.getPhase();
-		unselectAll();
-		for (Map.Entry<Point, PointInfo> e : points.entrySet()) {
-			Point p = e.getKey();
-			PointInfo pi = e.getValue();
-			Color c = state.getOccupancy(p);
-			pi.paint = c == Color.WHITE ? whitePaint : c == Color.BLACK ? blackPaint : null;
-		}
-		postInvalidate();
-		try {
-			if (!(white instanceof Human || black instanceof Human)) {
-				Thread.sleep(delay);
-			}
-		} catch (InterruptedException exc) {
-			throw new GameInterruptedException(exc);
-		}
 	}
 }

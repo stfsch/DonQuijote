@@ -19,7 +19,7 @@ public interface UI {
 	
 	public Player inputPlayer(Color pColor);
 	
-	public void stateMachineChanged(StateMachine state);
+	public void stateMachineChanged(StateMachine stateMachine);
 	
 	public void illegalMove(Color active, StateMachine stateMachine, State newState);
 

@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/com.example.android.customviews"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
     <de.rwth_aachen.kbsg.drq.FieldView
-            android:id="@+id/field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_weight="100"
-            android:background="@android:color/black"
-            />
-    <Button
-            android:id="@+id/config_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/config_button"
-            />
-    <Button
-            android:id="@+id/game_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/game_button"
-            />
+        android:id="@+id/field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
+        android:background="@color/background"
+        android:padding="10dp" />
+
+    <de.rwth_aachen.kbsg.drq.ConfigButton
+        android:id="@+id/config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:text="@string/game_button" />
+
 </LinearLayout>

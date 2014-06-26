@@ -88,4 +88,8 @@ public class Game {
 			throw new RuntimeException("game ended without WIN or DRAW but "+ stateMachine.getPhase());
 		}
 	}
+
+	public StateMachine getStateMachine() {
+		return stateMachine;
+	}
 }

@@ -164,10 +164,11 @@ public class RuleBasedAgent extends Player{
 				Point missingPoint = null;
 				if (s.isOccupiedBy(point,s.getOccupancy(point))){
 					halfMill1 = point;
-					if (missingPoint != null){
-						Point [] halfMill = {p, halfMill1, missingPoint};
-						return halfMill;
-					}
+					// XXX out-commented to avoid dead code warning
+//					if (missingPoint != null){
+//						Point [] halfMill = {p, halfMill1, missingPoint};
+//						return halfMill;
+//					}
 				}
 				if (!s.isOccupied(point)){
 					missingPoint = point;
