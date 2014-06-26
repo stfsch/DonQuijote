@@ -1,12 +1,21 @@
 package de.rwth_aachen.kbsg.drq;
 
+import java.util.Vector;
+
 import de.rwth_aachen.kbsg.dq.Color;
+import de.rwth_aachen.kbsg.dq.Heuristic;
 import de.rwth_aachen.kbsg.dq.MiniMaxAgent;
 import de.rwth_aachen.kbsg.dq.Player;
 import de.rwth_aachen.kbsg.dq.RandomAgent;
 import de.rwth_aachen.kbsg.dq.RuleBasedAgent;
+import de.rwth_aachen.kbsg.dq.SimpleHeuristic;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.PopupMenu;
@@ -35,6 +44,39 @@ public class ConfigButton extends Button implements View.OnClickListener {
 		public void onAgentSelected(Player p) {
 		}
 	}
+	
+	private static interface Handler {
+		public void handle();
+	}
+	
+	public static class ListDialogFragment extends DialogFragment {
+		private String title;
+		private Vector<String> strings = new Vector<String>();
+		private Vector<Handler> handlers = new Vector<Handler>();
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			String[] stringsArr = new String[strings.size()];
+			strings.toArray(stringsArr);
+			builder.setTitle(title).setItems(stringsArr, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					handlers.get(which).handle();
+				}
+			});
+			return builder.create();
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+		
+		public void addEntry(String string, Handler handler) {
+			strings.add(string);
+			handlers.add(handler);
+		}
+	}
 
 	private Listener listener = new Adapter();
 
@@ -61,6 +103,55 @@ public class ConfigButton extends Button implements View.OnClickListener {
 	}
 	
 	private void showPlayerMenu(final Color c) {
+		final int[] heuristicNames = { R.string.heuristic_simple };
+		final Heuristic[] heuristics = { new SimpleHeuristic() };
+		final Activity a = (Activity) getContext();
+		
+		final ListDialogFragment ldfHeuristic = new ListDialogFragment();
+		ldfHeuristic.setTitle(a.getString(R.string.choose_heuristic));
+		for (int i = 0; i < heuristicNames.length; ++i) {
+			final Heuristic heuristic = heuristics[i];
+			for (int j = 1; j <= 4; ++j) {
+				final int depth = j;
+				ldfHeuristic.addEntry(a.getString(R.string.choose_heuristic) +" x "+ depth, new Handler() {
+					@Override
+					public void handle() {
+						listener.onAgentSelected(new MiniMaxAgent(c, depth, heuristic));
+					}
+				});
+			}
+		}
+		
+		final ListDialogFragment ldf = new ListDialogFragment();
+		ldf.setTitle(a.getString(c == Color.WHITE ? R.string.choose_white : R.string.choose_black));
+		ldf.addEntry(a.getString(R.string.player_human), new Handler() {
+			@Override
+			public void handle() {
+				listener.onHumanSelected(c);
+			}
+		});
+		ldf.addEntry(a.getString(R.string.player_random), new Handler() {
+			@Override
+			public void handle() {
+				listener.onAgentSelected(new RandomAgent(c));
+			}
+		});
+		ldf.addEntry(a.getString(R.string.player_rulebased), new Handler() {
+			@Override
+			public void handle() {
+				listener.onAgentSelected(new RuleBasedAgent(c));
+			}
+		});
+		ldf.addEntry(a.getString(R.string.player_minimax), new Handler() {
+			@Override
+			public void handle() {
+				ldfHeuristic.show(a.getFragmentManager(), "heuristic");
+			}
+		});
+		ldf.show(a.getFragmentManager(), "player");
+	}
+	
+	private void showPlayerMenu2(final Color c) {
 		final int HUMAN = 0;
 		final int RANDOM = 1;
 		final int RULE_BASED = 2;
