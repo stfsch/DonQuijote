@@ -84,7 +84,7 @@ public class TUI implements UI {
 	@Override
 	public Player inputPlayer(Color pColor) {
 		Player player= null;
-		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler, 3 = regel-basierter Spieler, 4 = heuristic Agent");
+		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler, 3 = regel-basierter Spieler, 4 = heuristic Agent, 5 = Agent using MiniMax");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (player == null){
 			try {
@@ -100,7 +100,10 @@ public class TUI implements UI {
 					player = new RuleBasedAgent (pColor);
 					break;
 				case 4:
-					player = new HeuristicAgent (pColor);
+					player = new HeuristicAgent (pColor, new SimpleHeuristic());
+					break;
+				case 5:
+					player = new MiniMaxAgent (pColor, 4, new SimpleHeuristic());
 					break;
 				default:
 					System.out.println("Unzulässige Wahl, bitte neu eingeben");
