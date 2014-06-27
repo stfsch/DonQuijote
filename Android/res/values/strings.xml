@@ -12,6 +12,7 @@
     <string name="player_random">Random</string>
     <string name="player_rulebased">Rule-based</string>
     <string name="player_minimax">Minimax</string>
-    <string name="heuristic_simple">Simple</string>
+    <string name="heuristic1">Simple</string>
+    <string name="heuristic2">Neighbor</string>
 
 </resources>

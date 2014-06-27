@@ -1,6 +1,6 @@
 package de.rwth_aachen.kbsg.dq;
 
-public class Heuristic1 implements Heuristic {
+public class Heuristic1 extends Heuristic {
 
 	@Override
 	public int evaluate(StateMachine m) {

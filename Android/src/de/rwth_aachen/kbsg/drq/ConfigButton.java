@@ -4,11 +4,12 @@ import java.util.Vector;
 
 import de.rwth_aachen.kbsg.dq.Color;
 import de.rwth_aachen.kbsg.dq.Heuristic;
+import de.rwth_aachen.kbsg.dq.Heuristic1;
+import de.rwth_aachen.kbsg.dq.Heuristic2;
 import de.rwth_aachen.kbsg.dq.MiniMaxAgent;
 import de.rwth_aachen.kbsg.dq.Player;
 import de.rwth_aachen.kbsg.dq.RandomAgent;
 import de.rwth_aachen.kbsg.dq.RuleBasedAgent;
-import de.rwth_aachen.kbsg.dq.SimpleHeuristic;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -103,17 +104,17 @@ public class ConfigButton extends Button implements View.OnClickListener {
 	}
 	
 	private void showPlayerMenu(final Color c) {
-		final int[] heuristicNames = { R.string.heuristic_simple };
-		final Heuristic[] heuristics = { new SimpleHeuristic() };
+		final int[] heuristicNames = { R.string.heuristic1, R.string.heuristic2 };
+		final Heuristic[] heuristics = { new Heuristic1(), new Heuristic2() };
 		final Activity a = (Activity) getContext();
-		
 		final ListDialogFragment ldfHeuristic = new ListDialogFragment();
 		ldfHeuristic.setTitle(a.getString(R.string.choose_heuristic));
 		for (int i = 0; i < heuristicNames.length; ++i) {
+			final int name = heuristicNames[i];
 			final Heuristic heuristic = heuristics[i];
-			for (int j = 1; j <= 4; ++j) {
+			for (int j = 1000; j <= 5000; j+=1000) {
 				final int depth = j;
-				ldfHeuristic.addEntry(a.getString(R.string.choose_heuristic) +" x "+ depth, new Handler() {
+				ldfHeuristic.addEntry(a.getString(name) +" x "+ depth, new Handler() {
 					@Override
 					public void handle() {
 						listener.onAgentSelected(new MiniMaxAgent(c, depth, heuristic));
