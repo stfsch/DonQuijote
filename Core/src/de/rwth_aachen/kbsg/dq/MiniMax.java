@@ -14,7 +14,7 @@ public class MiniMax {
 		this.maxNodes = maxNodes;
 		this.h = heuristic;
 		visitedNodes = 0;
-		this.stateMachine = stateMachine;
+		this.stateMachine = stateMachine.withoutDrawTest();
 	}
 	public State minimax(){
 		int depth = 1;
@@ -52,6 +52,7 @@ public class MiniMax {
 			return h.evaluate(stateMachine);
 		}
 		else {
+			stateMachine = stateMachine.withoutDrawTest();
 			int bestValue = 0;
 			for (StateMachine child : stateMachine.getPossibleNextStateMachines().values()){
 				int thisValue = value(child, depth-1);

@@ -2,7 +2,11 @@ package de.rwth_aachen.kbsg.dq;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
 
@@ -151,7 +155,7 @@ public class State {
 		return s;
 	}
 	
-	private final static Collection<Point> points = new Vector<Point>(4*8);
+	private static final Collection<Point> points = new Vector<Point>(4*8);
 	
 	static {
 		for (int i = 0; i < 3; ++i) {
@@ -165,6 +169,32 @@ public class State {
 		return points;
 	}
 	
+	private static final Collection<Iterable<Point>> lines = new Vector<Iterable<Point>>(4*4);
+	
+	static {
+		Vector<Point> l;
+		l = new Vector<Point>(3); l.add(new Point(0, 0)); l.add(new Point(0, 1)); l.add(new Point(0, 2)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 2)); l.add(new Point(0, 3)); l.add(new Point(0, 4)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 4)); l.add(new Point(0, 5)); l.add(new Point(0, 6)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 6)); l.add(new Point(0, 7)); l.add(new Point(0, 0)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(1, 0)); l.add(new Point(1, 1)); l.add(new Point(1, 2)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(1, 2)); l.add(new Point(1, 3)); l.add(new Point(1, 4)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(1, 4)); l.add(new Point(1, 5)); l.add(new Point(1, 6)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(1, 6)); l.add(new Point(1, 7)); l.add(new Point(1, 0)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(2, 0)); l.add(new Point(2, 1)); l.add(new Point(2, 2)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(2, 2)); l.add(new Point(2, 3)); l.add(new Point(2, 4)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(2, 4)); l.add(new Point(2, 5)); l.add(new Point(2, 6)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(2, 6)); l.add(new Point(2, 7)); l.add(new Point(2, 0)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 1)); l.add(new Point(1, 1)); l.add(new Point(2, 1)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 3)); l.add(new Point(1, 3)); l.add(new Point(2, 3)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 5)); l.add(new Point(1, 5)); l.add(new Point(2, 5)); lines.add(l);
+		l = new Vector<Point>(3); l.add(new Point(0, 7)); l.add(new Point(1, 7)); l.add(new Point(2, 7)); lines.add(l);
+	}
+	
+	public Iterable<Iterable<Point>> linesOfField() {
+		return lines; 
+	}
+	
 	private static int mod(int x, int y) {
 		int r = x % y;
 		if (r < 0) {
@@ -172,24 +202,65 @@ public class State {
 		}
 		return r;
 	}
+	
+	private static Map<Point, Iterable<Point>> neighborsOf = new HashMap<Point, Iterable<Point>>();
+	
+	static {
+		for (Point p : points) {
+			Set<Point> ps = new HashSet<Point>();
+			if (p.getIndex() % 2 == 1) { // can switch to neighboring frames
+				if (p.getFrame() > 0) {
+					ps.add(new Point(p.getFrame() - 1, p.getIndex()));
+				}
+				if (p.getFrame() < 2) {
+					ps.add(new Point(p.getFrame() + 1, p.getIndex()));
+				}
+			}
+			ps.add(new Point(p.getFrame(), mod(p.getIndex() - 1, 8)));
+			ps.add(new Point(p.getFrame(), mod(p.getIndex() + 1, 8)));
+			neighborsOf.put(p, ps);
+		}
+	}
 
 	/**
 	 * Returns the direct neighbors of the given point.
 	 * Each point has at least two and no more than four neighbors.
 	 */
 	public Iterable<Point> neighborsOf(Point p) {
-		Set<Point> ps = new HashSet<Point>();
-		if (p.getIndex() % 2 == 1) { // can switch to neighboring frames
-			if (p.getFrame() > 0) {
-				ps.add(new Point(p.getFrame() - 1, p.getIndex()));
+		return neighborsOf.get(p);
+	}
+	
+	private static final Map<Point, Iterable<Iterable<Point>>> linesOf = new HashMap<Point, Iterable<Iterable<Point>>>(); 
+	
+	static {
+		for (Point p : points) {
+			Collection<Iterable<Point>> lines = new Vector<Iterable<Point>>(3);
+			Collection<Point> line;
+			
+			line = new Vector<Point>(2);
+			int i = (p.getIndex() / 2) * 2;
+			line.add(new Point(p.getFrame(), mod(i + 0, 8)));
+			line.add(new Point(p.getFrame(), mod(i + 1, 8)));
+			line.add(new Point(p.getFrame(), mod(i + 2, 8)));
+			lines.add(line);
+			
+			if (p.getIndex() % 2 == 0) {
+				line = new Vector<Point>(3);
+				line.add(new Point(p.getFrame(), mod(p.getIndex() - 0, 8)));
+				line.add(new Point(p.getFrame(), mod(p.getIndex() - 1, 8)));
+				line.add(new Point(p.getFrame(), mod(p.getIndex() - 2, 8)));
+				lines.add(line);
 			}
-			if (p.getFrame() < 2) {
-				ps.add(new Point(p.getFrame() + 1, p.getIndex()));
+			
+			if (p.getIndex() % 2 == 1) {
+				line = new Vector<Point>(3);
+				line.add(new Point(0, p.getIndex()));
+				line.add(new Point(1, p.getIndex()));
+				line.add(new Point(2, p.getIndex()));
+				lines.add(line);
 			}
+			linesOf.put(p, lines);
 		}
-		ps.add(new Point(p.getFrame(), mod(p.getIndex() - 1, 8)));
-		ps.add(new Point(p.getFrame(), mod(p.getIndex() + 1, 8)));
-		return ps;
 	}
 	
 	/**
@@ -197,53 +268,77 @@ public class State {
 	 * Each of these lines is a potential mill.
 	 * Each point is part in two lines. 
 	 */
-	public Iterable<? extends Iterable<Point>> linesOf(Point p) {
-		Collection<Iterable<Point>> lines = new Vector<Iterable<Point>>(3);
-		Collection<Point> line;
+	public Iterable<Iterable<Point>> linesOf(Point p) {
+		return linesOf.get(p);
+	}
+	
+	private static interface Predicate<E> {
+		public boolean holds(E e);
+	}
+	
+	private static class FilteringIterator<E> implements Iterator<E> {
+		private final Iterator<E> iter;
+		private final Predicate<E> pred;
+		private boolean have = false;
+		private E elem = null;
 		
-		line = new Vector<Point>(2);
-		int i = (p.getIndex() / 2) * 2;
-		line.add(new Point(p.getFrame(), mod(i + 0, 8)));
-		line.add(new Point(p.getFrame(), mod(i + 1, 8)));
-		line.add(new Point(p.getFrame(), mod(i + 2, 8)));
-		lines.add(line);
-		
-		if (p.getIndex() % 2 == 0) {
-			line = new Vector<Point>(3);
-			line.add(new Point(p.getFrame(), mod(p.getIndex() - 0, 8)));
-			line.add(new Point(p.getFrame(), mod(p.getIndex() - 1, 8)));
-			line.add(new Point(p.getFrame(), mod(p.getIndex() - 2, 8)));
-			lines.add(line);
+		public FilteringIterator(Iterable<E> iterable, Predicate<E> p) {
+			iter = iterable.iterator();
+			pred = p;
+			while ((have = iter.hasNext())) {
+				elem = iter.next();
+				if (pred.holds(elem)) {
+					break;
+				}
+			}
 		}
-		
-		if (p.getIndex() % 2 == 1) {
-			line = new Vector<Point>(3);
-			line.add(new Point(0, p.getIndex()));
-			line.add(new Point(1, p.getIndex()));
-			line.add(new Point(2, p.getIndex()));
-			lines.add(line);
+
+		@Override
+		public boolean hasNext() {
+			return have;
 		}
-		return lines;
+
+		@Override
+		public E next() {
+			if (!have) {
+				throw new NoSuchElementException();
+			}
+			E lastElem = elem;
+			while ((have = iter.hasNext())) {
+				elem = iter.next();
+				if (pred.holds(elem)) {
+					break;
+				}
+			}
+			return lastElem;
+		}
+	}
+	
+	private static <E> Iterable<E> filter(final Iterable<E> iterable, final Predicate<E> pred) {
+		return new Iterable<E>() {
+			@Override
+			public Iterator<E> iterator() {
+				return new FilteringIterator<E>(iterable, pred);
+			}
+		};
 	}
 	
 	public Iterable<Point> onlyFree(Iterable<Point> ps) {
-		Set<Point> qs = new HashSet<Point>();
-		for (Point p : ps) {
-			if (!isOccupied(p)) {
-				qs.add(p);
+		return filter(ps, new Predicate<Point>() {
+			@Override
+			public boolean holds(Point p) {
+				return !isOccupied(p);
 			}
-		}
-		return qs;
+		});
 	}
 	
-	public Iterable<Point> onlyOccupiedBy(Iterable<Point> ps, Color c) {
-		Set<Point> qs = new HashSet<Point>();
-		for (Point p : ps) {
-			if (isOccupiedBy(p, c)) {
-				qs.add(p);
+	public Iterable<Point> onlyOccupiedBy(Iterable<Point> ps, final Color c) {
+		return filter(ps, new Predicate<Point>() {
+			@Override
+			public boolean holds(Point p) {
+				return isOccupiedBy(p, c);
 			}
-		}
-		return qs;
+		});
 	}
 	
 	public Set<State> getPossibleNextStates(Phase phase, Color color) {

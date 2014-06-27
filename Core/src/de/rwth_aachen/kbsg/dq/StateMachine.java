@@ -58,7 +58,7 @@ public class StateMachine {
 		return state;
 	}
 	
-	private int historyCount(State state) {
+	protected int historyCount(State state) {
 		int n = 0;
 		for (StateMachine m = pred; m != null && m.getPhase() != Phase.OCCUPY; m = m.pred) {
 			if (m.getPhase() == Phase.MOVE && m.getState().equals(state)) {
@@ -68,11 +68,20 @@ public class StateMachine {
 		return n;
 	}
 	
-	private boolean isDraw() {
+	public StateMachine withoutDrawTest() {
+		return new StateMachine() {
+			@Override
+			protected boolean isDraw() {
+				return false;
+			}
+		};
+	}
+	
+	protected boolean isDraw() {
 		return noMillClosedSince >= 50 || historyCount(getState()) >= 3;
 	}
 	
-	private boolean isWin(Color c) {
+	protected boolean isWin(Color c) {
 		return phase == Phase.MOVE && (state.countPieces(c.opponent()) < 3 || state.getPossibleNextStates(Phase.MOVE, c.opponent()).isEmpty());
 	}
 	
