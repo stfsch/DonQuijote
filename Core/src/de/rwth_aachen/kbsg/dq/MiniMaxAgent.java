@@ -1,25 +1,30 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class MiniMaxAgent extends Player{
-	public MiniMax minimax;
-	public MiniMaxAgent(Color color, int depth, Heuristic heuristic) {
+	private int maxNodes;
+	private Heuristic heuristic;
+	public MiniMaxAgent(Color color, int maxNodes, Heuristic heuristic) {
 		super(color);
-		minimax = new MiniMax(color, depth, heuristic);
+		this.maxNodes = maxNodes;
+		this.heuristic = heuristic;
 	}
 
 	@Override
 	public State occupy(StateMachine s) {
-		return minimax.minimax(s);
+		MiniMax minimax = new MiniMax(getColor(), maxNodes, heuristic, s);
+		return minimax.minimax();
 	}
 
 	@Override
 	public State take(StateMachine s) {
-		return minimax.minimax(s);
+		MiniMax minimax = new MiniMax(getColor(), maxNodes, heuristic, s);
+		return minimax.minimax();
 	}
 
 	@Override
 	public State move(StateMachine s) {
-		return minimax.minimax(s);
+		MiniMax minimax = new MiniMax(getColor(), maxNodes, heuristic, s);
+		return minimax.minimax();
 	}
 
 }

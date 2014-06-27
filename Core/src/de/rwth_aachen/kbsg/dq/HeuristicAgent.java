@@ -9,17 +9,13 @@ public class HeuristicAgent extends Player{
 
 	@Override
 	public State occupy(StateMachine stateMachine) {
-		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
-		for (State possibleNextState : s.getPossibleNextStates(Phase.OCCUPY, getColor())){
-			if(max == 0){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
-			}
-			if(h.evaluate(possibleNextState, getColor()) >= max){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
+		for (StateMachine possibleNextStateMachine : stateMachine.getPossibleNextStateMachines().values()){
+			int value = h.evaluate(possibleNextStateMachine);
+			if(max == 0 || ((value > max) == (stateMachine.getActiveColor() == Color.WHITE))){
+				max = value;
+				bestMove = possibleNextStateMachine.getState();
 			}
 		}
 		return bestMove;
@@ -27,17 +23,13 @@ public class HeuristicAgent extends Player{
 
 	@Override
 	public State take(StateMachine stateMachine) {
-		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
-		for (State possibleNextState : s.getPossibleNextStates(Phase.TAKE, getColor())){
-			if(max == 0){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
-			}
-			if(h.evaluate(possibleNextState, getColor()) >= max){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
+		for (StateMachine possibleNextStateMachine : stateMachine.getPossibleNextStateMachines().values()){
+			int value = h.evaluate(possibleNextStateMachine);
+			if(max == 0 || ((value > max) == (stateMachine.getActiveColor() == Color.WHITE))){
+				max = value;
+				bestMove = possibleNextStateMachine.getState();
 			}
 		}
 		return bestMove;
@@ -45,17 +37,13 @@ public class HeuristicAgent extends Player{
 
 	@Override
 	public State move(StateMachine stateMachine) {
-		State s = stateMachine.getState();
 		int max = 0;
 		State bestMove = null;
-		for (State possibleNextState : s.getPossibleNextStates(Phase.MOVE, getColor())){
-			if(max == 0){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
-			}
-			if(h.evaluate(possibleNextState, getColor()) >= max){
-				max = h.evaluate(possibleNextState, getColor());
-				bestMove = possibleNextState;
+		for (StateMachine possibleNextStateMachine : stateMachine.getPossibleNextStateMachines().values()){
+			int value = h.evaluate(possibleNextStateMachine);
+			if(max == 0 || ((value > max) == (stateMachine.getActiveColor() == Color.WHITE))){
+				max = value;
+				bestMove = possibleNextStateMachine.getState();
 			}
 		}
 		return bestMove;

@@ -84,6 +84,7 @@ public class TUI implements UI {
 	@Override
 	public Player inputPlayer(Color pColor) {
 		Player player= null;
+		Heuristic h = null;
 		System.out.println("Wähle einen Spielertypen. 1 = Mensch, 2 = Zufallsspieler, 3 = regel-basierter Spieler, 4 = heuristic Agent, 5 = Agent using MiniMax");
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while (player == null){
@@ -100,10 +101,78 @@ public class TUI implements UI {
 					player = new RuleBasedAgent (pColor);
 					break;
 				case 4:
-					player = new HeuristicAgent (pColor, new SimpleHeuristic());
+					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ein bisschen schwerer, 5 = bastle dir deine eigene Heuristik.");
+					while (h == null){
+						try {
+							choice = Integer.parseInt(in.readLine());
+							switch(choice){
+							case 1:
+								h = new Heuristic1();
+								break;
+							case 2:
+								h = new Heuristic2();
+								break;
+							case 3:
+								h = new Heuristic3();
+								break;
+							case 4:
+								h = new Heuristic4();
+								break;
+							case 5:
+								System.out.println("Gib einen Faktor für die Gewichtung der Mühlen bei der Bewertung ein.");
+								int mills = Integer.parseInt(in.readLine());
+								System.out.println("Gib einen Faktor für die Gewichtung der Anzahl der Steine bei der Bewertung ein.");
+								int pieces = Integer.parseInt(in.readLine());
+								System.out.println("Gib einen Faktor für die Gewichtung der Beweglichkeit der Steine bei der Bewertung ein.");
+								int mobility = Integer.parseInt(in.readLine());
+								h = new DIYHeuristic(mills, pieces, mobility);
+								break;
+							default:
+								System.out.println("Unzulässige Wahl. Bitte neu eingeben.");
+							}
+						}
+						catch (NumberFormatException |IOException e) {
+							System.out.println(e.getMessage());
+						}
+						player = new HeuristicAgent (pColor, h);
+					}
 					break;
 				case 5:
-					player = new MiniMaxAgent (pColor, 4, new SimpleHeuristic());
+					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ungefähr wie 3, 5 = bastle dir deine eigene Heuristik.");
+					while (h == null){
+						try {
+							choice = Integer.parseInt(in.readLine());
+							switch(choice){
+							case 1:
+								h = new Heuristic1();
+								break;
+							case 2:
+								h = new Heuristic2();
+								break;
+							case 3:
+								h = new Heuristic3();
+								break;
+							case 4:
+								h = new Heuristic4();
+								break;
+							case 5:
+								System.out.println("Gib einen Faktor für die Gewichtung der Mühlen bei der Bewertung ein.");
+								int mills = Integer.parseInt(in.readLine());
+								System.out.println("Gib einen Faktor für die Gewichtung der Anzahl der Steine bei der Bewertung ein.");
+								int pieces = Integer.parseInt(in.readLine());
+								System.out.println("Gib einen Faktor für die Gewichtung der Beweglichkeit der Steine bei der Bewertung ein.");
+								int mobility = Integer.parseInt(in.readLine());
+								h = new DIYHeuristic(mills, pieces, mobility);
+								break;
+							default:
+								System.out.println("Unzulässige Wahl. Bitte neu eingeben.");
+							}
+						}
+						catch (NumberFormatException |IOException e) {
+							System.out.println(e.getMessage());
+						}
+					}
+					player = new MiniMaxAgent (pColor, 10000, h);
 					break;
 				default:
 					System.out.println("Unzulässige Wahl, bitte neu eingeben");
