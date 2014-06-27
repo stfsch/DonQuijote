@@ -1,6 +1,9 @@
 package de.rwth_aachen.kbsg.dq;
 
-public class Heuristic4 implements Heuristic{
+/**
+ * evaluates states by counting free direct neighbors (phase = occupation) or by counting the pieces (phase = move)
+ */
+public class Heuristic4 extends Heuristic{
 
 	@Override
 	public int evaluate(StateMachine m) {

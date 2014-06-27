@@ -14,7 +14,7 @@ public class MiniMax {
 		this.maxNodes = maxNodes;
 		this.h = heuristic;
 		visitedNodes = 0;
-		this.stateMachine = stateMachine.withoutDrawTest();
+		this.stateMachine = stateMachine;
 	}
 	public State minimax(){
 		int depth = 1;

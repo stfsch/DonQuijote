@@ -101,7 +101,7 @@ public class TUI implements UI {
 					player = new RuleBasedAgent (pColor);
 					break;
 				case 4:
-					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ein bisschen schwerer, 5 = bastle dir deine eigene Heuristik.");
+					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ein bisschen schwerer, 5 = ?, 6 = bastle dir deine eigene Heuristik.");
 					while (h == null){
 						try {
 							choice = Integer.parseInt(in.readLine());
@@ -119,13 +119,18 @@ public class TUI implements UI {
 								h = new Heuristic4();
 								break;
 							case 5:
+								h = new Heuristic5();
+								break;
+							case 6:
 								System.out.println("Gib einen Faktor für die Gewichtung der Mühlen bei der Bewertung ein.");
 								int mills = Integer.parseInt(in.readLine());
 								System.out.println("Gib einen Faktor für die Gewichtung der Anzahl der Steine bei der Bewertung ein.");
 								int pieces = Integer.parseInt(in.readLine());
 								System.out.println("Gib einen Faktor für die Gewichtung der Beweglichkeit der Steine bei der Bewertung ein.");
 								int mobility = Integer.parseInt(in.readLine());
-								h = new DIYHeuristic(mills, pieces, mobility);
+								System.out.println("Gib einen Faktor für die Gewichtung der verhinderten Mühlen bei der Bewertung ein.");
+								int preventedMills = Integer.parseInt(in.readLine());
+								h = new DIYHeuristic(mills, pieces, mobility, preventedMills);
 								break;
 							default:
 								System.out.println("Unzulässige Wahl. Bitte neu eingeben.");
@@ -138,7 +143,7 @@ public class TUI implements UI {
 					}
 					break;
 				case 5:
-					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ungefähr wie 3, 5 = bastle dir deine eigene Heuristik.");
+					System.out.println("Wähle eine Heuristik. 1 = einfach, 2 =  noch schwerer als 3, 3 = ein bisschen schwerer, 4 = ungefähr wie 3, 5 = ?, 6 = bastle dir deine eigene Heuristik.");
 					while (h == null){
 						try {
 							choice = Integer.parseInt(in.readLine());
@@ -156,13 +161,18 @@ public class TUI implements UI {
 								h = new Heuristic4();
 								break;
 							case 5:
+								h = new Heuristic5();
+								break;
+							case 6:
 								System.out.println("Gib einen Faktor für die Gewichtung der Mühlen bei der Bewertung ein.");
 								int mills = Integer.parseInt(in.readLine());
 								System.out.println("Gib einen Faktor für die Gewichtung der Anzahl der Steine bei der Bewertung ein.");
 								int pieces = Integer.parseInt(in.readLine());
 								System.out.println("Gib einen Faktor für die Gewichtung der Beweglichkeit der Steine bei der Bewertung ein.");
 								int mobility = Integer.parseInt(in.readLine());
-								h = new DIYHeuristic(mills, pieces, mobility);
+								System.out.println("Gib einen Faktor für die Gewichtung der verhinderten Mühlen bei der Bewertung ein.");
+								int preventedMills = Integer.parseInt(in.readLine());
+								h = new DIYHeuristic(mills, pieces, mobility, preventedMills);
 								break;
 							default:
 								System.out.println("Unzulässige Wahl. Bitte neu eingeben.");

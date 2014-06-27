@@ -1,6 +1,9 @@
 package de.rwth_aachen.kbsg.dq;
 
-public class Heuristic3 implements Heuristic {
+/**
+ * evaluates states by counting the own and the opponement's neighbors
+ */
+public class Heuristic3 extends Heuristic {
 	public int evaluate (StateMachine m){
 		int value = 0;
 		State s = m.getState();
