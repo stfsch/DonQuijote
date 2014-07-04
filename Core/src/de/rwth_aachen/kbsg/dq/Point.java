@@ -20,49 +20,40 @@ package de.rwth_aachen.kbsg.dq;
  * </pre>
  */
 public class Point {
-	private final int frame;
-	private final int index;
+	private final int i;
+	
+	public Point(int i) {
+		this.i = i;
+	}
 	
 	public Point(int frame, int index) {
-		this.frame = frame;
-		this.index = index;
+		this.i = frame * 8 + index;
 	}
 	
 	public int getFrame() {
-		return frame;
+		return i / 8;
 	}
 
 	public int getIndex() {
-		return index;
+		return i % 8;
+	}
+	
+	int getNumber() {
+		return i;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + frame;
-		result = prime * result + index;
-		return result;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Point other = (Point) obj;
-		if (frame != other.frame)
-			return false;
-		if (index != other.index)
-			return false;
-		return true;
+		return i;
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return this == obj || (obj != null && obj instanceof Point && i == ((Point) obj).i);
+	}
+	
+	@Override
 	public String toString() {
-		return "(" + frame + ", " + index + ")";
+		return "(" + getFrame() + ", " + getIndex() + ")";
 	}
 }

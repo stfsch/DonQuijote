@@ -1,6 +1,5 @@
 package de.rwth_aachen.kbsg.dq;
 
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,100 +14,85 @@ import java.util.Vector;
  * Objects of this class are immutable. 
  */
 public class State {
-	private final BitSet white = new BitSet(3*8);
-	private final BitSet black = new BitSet(3*8);
+	private int white = 0;
+	private int black = 0;
 
 	public State() {
 	}
 	
 	public State(State s) {
-		white.or(s.white);
-		black.or(s.black);
+		white = s.white;
+		black = s.black;
 	}
 	
 	/**
 	 * The occupancy of the value is either <code>null</code> or the occupying player's color.
 	 */
 	public Color getOccupancy(Point p) {
-		final int i = p.getFrame() * 8 + p.getIndex();
-		return white.get(i) ? Color.WHITE : black.get(i) ? Color.BLACK : null;
+		final int mask = 1 << p.getNumber();
+		return (white & mask) != 0 ? Color.WHITE : (black & mask) != 0 ? Color.BLACK : null;
 	}
-	
-	private static Point indexToPoint(int i) {
-		return new Point(i / 8, i % 8);
-	}
-	
-	private static int pointToIndex(Point p) {
-		return p.getFrame() * 8 + p.getIndex();
-	}
-	
+
 	/**
 	 * Sets the occupancy value to either <code>null</code> or the occupying player's color.
 	 * This method is private because State is an immutable class.
 	 */
 	private void setOccupancy(Point p, Color c) {
-		final int i = pointToIndex(p);
-		white.set(i, c == Color.WHITE);
-		black.set(i, c == Color.BLACK);
+		final int mask = 1 << p.getNumber();
+		if (c == Color.WHITE) {
+			white |= mask;
+			black &= ~ mask;
+		} else if (c == Color.BLACK) {
+			white &= ~ mask;
+			black |= mask;
+		} else {
+			white &= ~ mask;
+			black &= ~ mask;
+		}
 	}
 
 	public boolean isOccupied(Point p) {
-		return getOccupancy(p) != null;
+		final int mask = 1 << p.getNumber();
+		return ((white | black) & mask) != 0;
 	}
 	
 	public boolean isOccupiedBy(Point p, Color c) {
-		return getOccupancy(p) == c;
+		final int mask = 1 << p.getNumber();
+		return c == Color.WHITE && (white & mask) != 0 ||
+			   c == Color.BLACK && (black & mask) != 0 ||
+			   c == null        && ((white | black) & mask) != 0;
 	}
 	
 	public Iterable<Point> getOccupations(Color c) {
-		BitSet bs = c == Color.WHITE ? white : black;
-		Collection<Point> ps = new Vector<Point>(9);
-		for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
-			ps.add(indexToPoint(i));
+		final int bits = c == Color.WHITE ? white : black;
+		Collection<Point> ps = new Vector<Point>(Integer.bitCount(bits));
+		int from = Integer.lowestOneBit(bits);
+		int to = Integer.highestOneBit(bits);
+		for (int i = from; i <= to; ++i) {
+			Point p = new Point(i);
+			if (isOccupiedBy(p, c)) {
+				ps.add(p);
+			}
 		}
 		return ps;
 	}
 	
-	public int countPieces(Color color) {
-		switch (color) {
-		case WHITE:
-			return white.cardinality();
-		case BLACK:
-			return black.cardinality();
-		default:
-			return 3*8 - white.cardinality() - black.cardinality();
-		}
+	public int countPieces(Color c) {
+		return c == Color.WHITE ? Integer.bitCount(white) : c == Color.BLACK ? Integer.bitCount(black) : 3*8 - Integer.bitCount(white | black);
 	}
 	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((black == null) ? 0 : black.hashCode());
-		result = prime * result + ((white == null) ? 0 : white.hashCode());
+		result = prime * result + black;
+		result = prime * result + white;
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		State other = (State) obj;
-		if (black == null) {
-			if (other.black != null)
-				return false;
-		} else if (!black.equals(other.black))
-			return false;
-		if (white == null) {
-			if (other.white != null)
-				return false;
-		} else if (!white.equals(other.white))
-			return false;
-		return true;
+		return this == obj || (obj != null && obj instanceof State && white == ((State) obj).white && black == ((State) obj).black);
 	}
 
 	/**
@@ -116,7 +100,7 @@ public class State {
 	 * @throws IllegalOccupationException if the point was occupied
 	 */
 	public State occupy(Point p, Color c) {
-		if (getOccupancy(p) != null) {
+		if (isOccupied(p)) {
 			throw new IllegalOccupationException("point "+ p +" is already occupied");
 		}
 		State s = new State(this);
@@ -203,7 +187,7 @@ public class State {
 		return r;
 	}
 	
-	private static Map<Point, Iterable<Point>> neighborsOf = new HashMap<Point, Iterable<Point>>();
+	private static Map<Point, Iterable<Point>> neighborsOf = new HashMap<Point, Iterable<Point>>(3*8, 1.0f);
 	
 	static {
 		for (Point p : points) {
@@ -230,7 +214,7 @@ public class State {
 		return neighborsOf.get(p);
 	}
 	
-	private static final Map<Point, Iterable<Iterable<Point>>> linesOf = new HashMap<Point, Iterable<Iterable<Point>>>(); 
+	private static final Map<Point, Iterable<Iterable<Point>>> linesOf = new HashMap<Point, Iterable<Iterable<Point>>>(3*8, 1.0f); 
 	
 	static {
 		for (Point p : points) {
@@ -381,6 +365,15 @@ public class State {
 			}
 		}
 		return false;
+	}
+	
+	public boolean areAllOccupiedBy(Iterable<Point> ps, Color color) {
+		for (Point p : ps) {
+			if (!isOccupiedBy(p, color)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean hasOnlyMills(Color color) {
