@@ -66,10 +66,7 @@ public class State {
 	public Iterable<Point> getOccupations(Color c) {
 		final int bits = c == Color.WHITE ? white : black;
 		Collection<Point> ps = new Vector<Point>(Integer.bitCount(bits));
-		int from = Integer.lowestOneBit(bits);
-		int to = Integer.highestOneBit(bits);
-		for (int i = from; i <= to; ++i) {
-			Point p = new Point(i);
+		for (Point p : pointsOfField()) {
 			if (isOccupiedBy(p, c)) {
 				ps.add(p);
 			}

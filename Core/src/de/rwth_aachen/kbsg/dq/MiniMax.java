@@ -4,12 +4,12 @@ import java.util.Collection;
 
 public class MiniMax {
 	public Color color;
-	int maxNodes;
+	long maxNodes;
 	StateMachine stateMachine;
-	int visitedNodes;
+	long visitedNodes;
 	public Heuristic h;
 	
-	public MiniMax(Color color, int maxNodes, Heuristic heuristic, StateMachine stateMachine) {
+	public MiniMax(Color color, long maxNodes, Heuristic heuristic, StateMachine stateMachine) {
 		this.color = color;
 		this.maxNodes = maxNodes;
 		this.h = heuristic;

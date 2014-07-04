@@ -182,7 +182,18 @@ public class TUI implements UI {
 							System.out.println(e.getMessage());
 						}
 					}
-					player = new MiniMaxAgent (pColor, 10000, h);
+					System.out.println("Gib eine Größenordnung für die Minimax-Suchtiefe an (6 -> eine Million Knoten werden evaluiert)");
+					int logMaxNodes = -1;
+					while (logMaxNodes < 0) {
+						try {
+							logMaxNodes = Integer.parseInt(in.readLine());
+						} catch (NumberFormatException | IOException e) {
+							System.out.println(e.getMessage());
+							logMaxNodes = -1;
+						}
+					}
+					long maxNodes = (long) Math.pow(10.0, logMaxNodes);
+					player = new MiniMaxAgent (pColor, maxNodes, h);
 					break;
 				default:
 					System.out.println("Unzulässige Wahl, bitte neu eingeben");

@@ -1,9 +1,9 @@
 package de.rwth_aachen.kbsg.dq;
 
 public class MiniMaxAgent extends Player{
-	private int maxNodes;
+	private long maxNodes;
 	private Heuristic heuristic;
-	public MiniMaxAgent(Color color, int maxNodes, Heuristic heuristic) {
+	public MiniMaxAgent(Color color, long maxNodes, Heuristic heuristic) {
 		super(color);
 		this.maxNodes = maxNodes;
 		this.heuristic = heuristic;
@@ -27,4 +27,8 @@ public class MiniMaxAgent extends Player{
 		return minimax.minimax();
 	}
 
+	@Override
+	public String toString() {
+		return "MiniMaxAgent [maxNodes=" + maxNodes + ", heuristic=" + heuristic + "]";
+	}
 }

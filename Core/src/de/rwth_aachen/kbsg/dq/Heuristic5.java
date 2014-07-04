@@ -7,7 +7,7 @@ package de.rwth_aachen.kbsg.dq;
 public class Heuristic5 extends Heuristic{
 
 	@Override
-	int evaluate(StateMachine stateMachine) {
+	public int evaluate(StateMachine stateMachine) {
 		int value = 0;
 		State s = stateMachine.getState();
 		value += s.countPieces(Color.WHITE)*6;
